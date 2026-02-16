@@ -1,0 +1,36 @@
+[dependencies]
+anyhow = { workspace = true }
+bcs-ext = { workspace = true }
+starcoin-crypto = { workspace = true }
+futures = { workspace = true }
+starcoin-logger = { workspace = true }
+network-api = { workspace = true }
+starcoin-chain = { workspace = true }
+starcoin-chain-api = { workspace = true }
+starcoin-metrics = { workspace = true }
+starcoin-network = { workspace = true }
+starcoin-network-rpc-api = { workspace = true }
+starcoin-service-registry = { workspace = true }
+starcoin-sync = { workspace = true }
+starcoin-sync-api = { workspace = true }
+starcoin-time-service = { workspace = true }
+starcoin-txpool = { workspace = true }
+starcoin-txpool-api = { workspace = true }
+starcoin-types = { workspace = true }
+starcoin-config = { workspace = true }
+
+[dev-dependencies]
+hex = { workspace = true }
+stest = { workspace = true }
+tokio = { features = ["full"], workspace = true }
+
+[package]
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+name = "starcoin-block-relayer"
+publish = { workspace = true }
+version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
