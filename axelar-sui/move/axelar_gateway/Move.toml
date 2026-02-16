@@ -1,0 +1,12 @@
+[package]
+name = "AxelarGateway"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+VersionControl = { local = "../version_control" }
+Utils = { local = "../utils" }
+
+[addresses]
+axelar_gateway = "0xa1"
+clock = "0x6"

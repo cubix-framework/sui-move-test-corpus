@@ -1,0 +1,16 @@
+[package]
+name = "Example"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+GasService = { local = "../gas_service" }
+AxelarGateway = { local = "../axelar_gateway" }
+Utils = { local = "../utils" }
+VersionControl = { local = "../version_control" }
+InterchainTokenService = { local = "../interchain_token_service" }
+RelayerDiscovery = { local = "../relayer_discovery" }
+Operators = { local = "../operators" }
+
+[addresses]
+example = "0xa9"

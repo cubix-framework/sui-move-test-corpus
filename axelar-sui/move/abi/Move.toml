@@ -1,0 +1,9 @@
+[package]
+name = "Abi"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+[addresses]
+abi = "0xa0"

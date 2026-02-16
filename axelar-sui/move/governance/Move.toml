@@ -1,0 +1,13 @@
+[package]
+name = "Governance"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+AxelarGateway = { local = "../axelar_gateway" }
+Abi = { local = "../abi" }
+Utils = { local = "../utils" }
+VersionControl = { local = "../version_control" }
+
+[addresses]
+governance = "0xa3"
