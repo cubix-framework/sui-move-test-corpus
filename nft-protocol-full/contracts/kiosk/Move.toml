@@ -1,0 +1,12 @@
+[package]
+name = "Kiosk"
+version = "1.7.0"
+published-at = "0x710fe6944f741058ce916cd16e87953a656b5d339591c1627e73e41f01509d99"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.19.1" }
+Permissions = { local = "./../permissions" }
+Request = { local = "./../request" }
+
+[addresses]
+ob_kiosk = "0x95a441d389b07437d00dd07e0b6f05f513d7659b13fd7c5d3923c7d9d847199b"

@@ -1,0 +1,9 @@
+[package]
+name = "suins_temp_subdomain_proxy"
+edition = "2024.beta"
+
+[dependencies]
+suins_subdomains = { local = "../subdomains" }
+
+[addresses]
+suins_temp_subdomain_proxy = "0x0"
