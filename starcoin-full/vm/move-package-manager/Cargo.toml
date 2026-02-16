@@ -1,0 +1,48 @@
+[[bin]]
+name = "mpm"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { features = ["derive"], workspace = true }
+itertools = { workspace = true }
+once_cell = { workspace = true }
+bcs-ext = { workspace = true }
+datatest-stable = { git = "https://github.com/starcoinorg/diem-devtools", branch = "feature/pub-test-opts" }
+move-binary-format = { workspace = true }
+move-bytecode-verifier = { workspace = true }
+move-cli = { workspace = true }
+move-command-line-common = { workspace = true }
+move-compiler = { workspace = true }
+move-core-types = { workspace = true }
+move-package = { workspace = true }
+move-vm-runtime = { workspace = true }
+starcoin-account-provider = { workspace = true }
+starcoin-cmd = { workspace = true }
+starcoin-config = { workspace = true }
+starcoin-crypto = { workspace = true }
+starcoin-logger = { workspace = true }
+starcoin-move-compiler = { workspace = true }
+starcoin-rpc-api = { workspace = true }
+starcoin-rpc-client = { workspace = true }
+starcoin-transactional-test-harness = { workspace = true }
+starcoin-types = { workspace = true }
+starcoin-vm-runtime = { features = ["testing"], workspace = true }
+starcoin-vm-types = { workspace = true }
+stdlib = { workspace = true }
+vm-status-translator = { workspace = true }
+move-vm-test-utils = { workspace = true }
+
+[dev-dependencies]
+
+[package]
+authors = { workspace = true }
+description = "CLI frontend for the Move compiler and VM"
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+name = "move-package-manager"
+publish = { workspace = true }
+repository = { workspace = true }
+version = { workspace = true }
+rust-version = { workspace = true }

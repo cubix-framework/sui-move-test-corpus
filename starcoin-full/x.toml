@@ -1,0 +1,171 @@
+[grcov.installer]
+version = "0.8.11"
+
+
+[system-tests]
+transaction-builder-generator = { path = "vm/transaction-builder-generator" }
+testsuite = { path = "testsuite" }
+benchmarks = { path = "benchmarks" }
+
+[cargo]
+toolchain = "nightly"
+flags = "-Zfeatures=all"
+
+[cargo.sccache]
+bucket = "ci-artifacts.starcoin.org"
+prefix = "sccache/starcoin/"
+public = true
+region = "us-west-2"
+endpoint = "https://s3-us-west-2.amazonaws.com"
+required-cargo-home = "/opt/cargo"
+required-git-home = "/opt/git/starcoin"
+envs = [
+    #To debug sccache uncomment the two lines below.
+    #["SCCACHE_ERROR_LOG","/tmp/sccache_log"],
+    #["SCCACHE_LOG", "sccache::compiler::compiler=trace,rusoto_core::request=trace"],
+]
+
+[cargo.sccache.installer]
+version = "0.2.14-alpha.0"
+git = "https://github.com/rexhoffman/sccache.git"
+git-rev = "549babdd3866aa60dae01668c42ee00bf1e8c763"
+features = [ "s3" ]
+
+[fix]
+
+[clippy]
+allowed = [
+    # Deriving Arbitrary often causes this warning to show up.
+    "clippy::unit_arg",
+    # Known to have false positive at the moment,
+    "clippy::mutable_key_type",
+    "clippy::eval-order-dependence",
+    "clippy::new-without-default",
+]
+warn = [
+    "clippy::wildcard_dependencies",
+]
+
+[hakari]
+resolver = "2"
+# temp hack to work around on hakari. We need to revisit the hakari part.
+hakari-package = "starcoin-x"
+#exact-versions = true
+platforms = [
+    "x86_64-unknown-linux-gnu",
+    "x86_64-apple-darwin",
+]
+
+# Ideally we'd have powerpc-unknown-linux-gnu here as well, but unification causes openssl-sys to be included,
+# and openssl can't be cross-compiled without extra work. This may need to be fixed in hakari through being able
+# to say "consider only these packages for these target platforms".
+
+[hakari.traversal-excludes]
+workspace-members = [
+
+    # Also exclude the devtools packages since they get compiled with a different set of options.
+    # "starcoin-x",
+]
+
+[hakari.final-excludes]
+third-party = [
+    # Exclude the fail crate because the failpoints feature should only be enabled
+    # for certain builds.
+    { name = "fail" },
+]
+
+# This follows the same syntax as CargoOptionsSummary in guppy.
+[summaries.default]
+resolver = "2"
+include-dev = false
+initials-platform = "standard"
+
+[summaries.default.target-platform]
+triple = "x86_64-unknown-linux-gnu"
+target-features = "all"
+
+[summaries.default.host-platform]
+triple = "x86_64-unknown-linux-gnu"
+target-features = "all"
+
+[summaries.full]
+version = "v2"
+include-dev = true
+initials-platform = "standard"
+# Don't set target or host platforms, or omitted packages, for the full set.
+
+[workspace]
+
+# Regex for allowed characters in paths. Regex must have ^ and $ anchors.
+allowed-paths = "^([a-zA-Z0-9._\\-/@:]|-)+$"
+
+whitespace-exceptions = [
+    ".github/actions/*/dist/*",
+    "**/*.exp",
+    "**/*.errmap",
+]
+
+[workspace.enforced-attributes]
+authors = ["Starcoin Core Dev <dev@starcoin.org>"]
+license = "Apache-2.0"
+
+[workspace.banned-deps.direct]
+lazy_static = "use once_cell::sync::Lazy instead"
+
+[workspace.banned-deps.default-build]
+criterion = "criterion is only for benchmarks"
+proptest = "proptest is only for testing and fuzzing"
+
+[workspace.direct-dep-dups]
+allow = [
+]
+
+[workspace.overlay]
+features = ["fuzzing"]
+
+[workspace.test-only]
+members = [
+    "common/proptest-helpers",
+    # "devtools/x",
+]
+
+[workspace.move-to-diem-deps]
+diem_crates_in_language = [
+]
+exclude = [
+]
+# This is a list of existing move to diem dependencies that we plan to eliminate over time.
+# You should refrain from adding new entries to this list in general.
+existing_deps = [
+]
+
+# Interesting subsets of the workspace, These are used for generating and
+# checking dependency summaries.
+
+[subsets.lsr]
+# The Starcoin safety rules TCB.
+root-members = [
+]
+
+[subsets.lec]
+# The Starcoin execution correctness TCB.
+root-members = [
+]
+
+[subsets.release]
+# The Starcoin release binaries
+root-members = [
+]
+
+# ---
+# Determinator rules
+# ---
+
+[[determinator.path-rule]]
+globs = [".github/**/*", ".circleci/**/*", "devtools/**/*", "codecov.yml"]
+mark-changed = "all"
+
+# Core devtools files.
+[[determinator.path-rule]]
+globs = ["cargo-toolchain", "cargo-flags", "scripts/dev_setup.sh", "scripts/dev_setup.ps1", "x.toml"]
+mark-changed = "all"

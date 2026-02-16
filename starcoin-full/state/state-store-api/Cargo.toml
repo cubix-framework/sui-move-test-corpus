@@ -1,0 +1,16 @@
+[dependencies]
+anyhow = { workspace = true }
+forkable-jellyfish-merkle = { workspace = true }
+serde = { workspace = true }
+starcoin-crypto = { workspace = true }
+
+[package]
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+name = "starcoin-state-store-api"
+publish = { workspace = true }
+version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }

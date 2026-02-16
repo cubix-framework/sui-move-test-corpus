@@ -1,0 +1,28 @@
+[dependencies]
+anyhow = { workspace = true }
+futures = { workspace = true }
+hex = { workspace = true }
+itertools = { workspace = true }
+parking_lot = { workspace = true }
+rand = { workspace = true }
+serde = { workspace = true }
+bcs-ext = { workspace = true }
+network-p2p-types = { workspace = true }
+network-types = { workspace = true }
+schemars = { workspace = true }
+starcoin-crypto = { workspace = true }
+starcoin-logger = { workspace = true }
+starcoin-metrics = { workspace = true }
+starcoin-service-registry = { workspace = true }
+starcoin-types = { workspace = true }
+
+[package]
+authors = { workspace = true }
+edition = { workspace = true }
+name = "network-api"
+version = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }

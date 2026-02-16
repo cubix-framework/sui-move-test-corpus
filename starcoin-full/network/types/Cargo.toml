@@ -1,0 +1,18 @@
+[dependencies]
+anyhow = { workspace = true }
+serde = { workspace = true }
+network-p2p-types = { workspace = true }
+schemars = { workspace = true }
+starcoin-crypto = { workspace = true }
+starcoin-types = { workspace = true }
+
+[package]
+authors = { workspace = true }
+edition = { workspace = true }
+name = "network-types"
+version = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
