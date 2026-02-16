@@ -1,0 +1,5 @@
+[package]
+name = "bag_hero"
+edition = "2024"
+
+[dependencies]

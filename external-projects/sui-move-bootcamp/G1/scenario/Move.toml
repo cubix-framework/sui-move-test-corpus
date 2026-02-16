@@ -1,0 +1,5 @@
+[package]
+name = "scenario"
+edition = "2024"
+
+[dependencies]

@@ -1,0 +1,5 @@
+[package]
+name = "king_credits"
+edition = "2024"
+
+[dependencies]

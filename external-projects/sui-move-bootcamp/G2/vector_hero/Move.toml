@@ -1,0 +1,5 @@
+[package]
+name = "vector_hero"
+edition = "2024"
+
+[dependencies]

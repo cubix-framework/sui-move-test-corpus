@@ -1,0 +1,43 @@
+[package]
+name = "sui-hero-indexer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1.61"
+bcs = "0.1.6"
+clap = { version = "4.4", features = ["derive"] }
+diesel = { version = "2.2", features = [
+    "postgres",
+    "serde_json",
+    "chrono",
+    "uuid",
+] }
+diesel_migrations = "2.2"
+diesel-async = "0.5"
+tokio = "1.43.0"
+url = "2.3.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+sui-indexer-alt-framework = { git = "https://github.com/MystenLabs/sui.git" }
+
+[build-dependencies]
+diesel-derive-enum = "2.1"
+diesel-derive-newtype = "2.1"
+
+[dev-dependencies]
+rstest = "0.25.0"
+testcontainers = "0.23.3"
+testcontainers-modules = { version = "0.11.6", features = ["postgres"] }
+diesel_async_migrations = "0.15.0"
+ctor = "0.4.1"
+tokio = { version = "1.43.0", features = ["full"] }
+diesel-async = { version = "0.5", features = ["postgres"] }
+diesel = { version = "2.2", features = [
+    "postgres",
+    "serde_json",
+    "chrono",
+    "uuid",
+] }
+serde_json = "1.0"

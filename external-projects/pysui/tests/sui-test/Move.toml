@@ -1,0 +1,10 @@
+[package]
+name = "pysuidance"
+version = "0.0.1"
+edition = "2024"
+
+[dependencies]
+Sui = { local = "../../../../suibase/workdirs/active/sui-repo/crates/sui-framework/packages/sui-framework"  }
+
+[addresses]
+pysuidance =  "0x0"

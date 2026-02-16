@@ -1,0 +1,8 @@
+[package]
+name = "my_event_emitter"
+edition = "2024"
+
+[dependencies]
+age_calculator = { local = "../age_calculator", override = true }
+weather_oracle = { local = "../weather_oracle", override = true }
+names_indexer = { local = "../names_indexer", override = true }

@@ -1,0 +1,5 @@
+[package]
+name = "option_hero"
+edition = "2024"
+
+[dependencies]

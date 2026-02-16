@@ -1,0 +1,6 @@
+[package]
+name = "hero"
+edition = "2024"
+
+[dependencies]
+weapon = { local = "../weapon" }

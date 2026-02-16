@@ -1,0 +1,72 @@
+# macos cruft
+.DS_Store
+
+# Virtual environment
+pysuienv
+env
+.env
+.python-version
+
+# Compiled code
+__pycache__
+Move.lock
+
+# logs
+*.log*
+
+# Temporary Spikes
+faux.py
+temp*.py
+temp*.json
+temp*.stub
+pool*.py
+parmobject*.py
+temp_sub.py
+out*
+protocol.json
+backup/
+ser_deser_txn.py
+ser_sample.json
+ser_txn.py
+*_schema-*.graphql
+pgql_bs_examp.py
+
+
+# pytest cruft
+.pytest_cache
+
+# mypy cruft
+.mypy_cache
+
+# vscode cruft
+.vscode/launch.json
+
+# Local copy of SUI RPC API from `rpc.discover` or some inferencing review
+apidefn*.json
+optionals_*.json
+
+# Local copy of SUI 0x2 modules and functions
+siggen.list
+
+# Local copy of Sui gRPC protobufs
+suiprot
+
+# Publish runs cruft
+build
+doc/build
+pysui.egg-info
+dist
+setup.py
+
+# Documentation runs cruft
+doc/source/pysui.sui*
+doc/source/modules.rst
+doc/source/pysui.abstracts.rst
+doc/source/pysui.rst
+doc/source/pysui.sui.rst
+
+# Misc cruft
+*.txt
+!reqrtd.txt
+PysuiConfig.json
+mtobcs_samp.json

@@ -1,0 +1,5 @@
+[package]
+name = "age_calculator"
+edition = "2024"
+
+[dependencies]

@@ -1,0 +1,9 @@
+[package]
+name = "SuiMoveTemplate"
+version = "0.0.1"
+
+[dependencies]
+Sui = { local = "./lib/sui-framework" }
+
+[addresses]
+oracles = "0x0"

@@ -1,0 +1,5 @@
+[package]
+name = "my_event_emitter_ptb"
+edition = "2024"
+
+[dependencies]

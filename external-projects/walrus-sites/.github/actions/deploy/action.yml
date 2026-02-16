@@ -1,0 +1,129 @@
+name: "Deploy Walrus Site"
+description: |
+  ⚠️ **DEPRECATED: This action has moved to its own repository.**
+
+  Please update your workflows to use: `MystenLabs/walrus-sites-github-actions/deploy@v1`
+
+  This wrapper will continue to work but will be removed in a future release.
+  See https://github.com/MystenLabs/walrus-sites-github-actions for the new location.
+
+  ---
+
+  Deploys a static site to Walrus and publishes it as a webpage.
+
+  **Note:** This action operates on an existing set of static files.
+  You'll typically want to run a checkout and optionally a build step before using this action.
+
+  **Deployer Sui Account Setup:**
+
+  This action requires a Sui account to deploy your site. You can provide the account information in
+  one of three ways:
+
+  1. **Address + Keystore**:
+     - Provide both `SUI_ADDRESS` and `SUI_KEYSTORE` inputs
+     - Use this if you already have a Sui address and keystore file
+
+  2. **Bech32 Private Key**:
+     - Provide `SUI_BECH32_PRIVATE_KEY` input with a bech32 encoded private key
+     - The action will download the Sui binary and extract the address and keystore
+
+  3. **Secret Phrase**:
+     - Provide `SUI_SECRET_PHRASE` input with a mnemonic recovery phrase
+     - The action will download the Sui binary and generate the address and keystore
+
+  **Important:** Use only one of these methods per deployment. The action will validate that exactly
+  one method is provided.
+
+  For usage examples, see the following workflows and their corresponding sites:
+  - `.github/workflows/deploy-snake.yml`: Deploys `examples/snake`, a site with ready-to-deploy
+    assets.
+  - In MystenLabs/walrus-sites-github-actions: `example/.github/workflows/deploy-vite-react-ts.yml`: Deploys `example/vite-react-ts`, which requires a
+    build step first.
+inputs:
+    # Setup Walrus action inputs:
+    SUI_ADDRESS:
+        description: |
+          The Sui address to use. Must be provided together with SUI_KEYSTORE.
+          Cannot be used with SUI_BECH32_PRIVATE_KEY or SUI_SECRET_PHRASE.
+        required: false
+    SUI_KEYSTORE:
+        description: |
+          The content of the Sui keystore file. Must be provided together with SUI_ADDRESS.
+          Cannot be used with SUI_BECH32_PRIVATE_KEY or SUI_SECRET_PHRASE.
+        required: false
+    SUI_BECH32_PRIVATE_KEY:
+        description: |
+          Bech32 encoded Sui private key (format: suiprivkey1...). The action will download the Sui
+          binary, derive the address, and create the keystore from this private key using Ed25519
+          scheme.
+          Cannot be used with SUI_ADDRESS/SUI_KEYSTORE or SUI_SECRET_PHRASE.
+        required: false
+    SUI_SECRET_PHRASE:
+        description: |
+          Sui secret recovery phrase (mnemonic). The action will download the Sui binary and
+          generate the address and create the keystore from this recovery phrase using Ed25519
+          scheme.
+          Cannot be used with SUI_ADDRESS/SUI_KEYSTORE or SUI_BECH32_PRIVATE_KEY.
+        required: false
+    WALRUS_CONFIG:
+        description: |
+          The content of the Walrus configuration file. If not provided, it will be downloaded from
+          the Walrus repository.
+        required: false
+    SUI_NETWORK:
+        description: The Sui network to use.
+        default: mainnet
+    # Deploy site action inputs:
+    DIST:
+      description: Path to the directory with the built site.
+      required: true
+    SITES_CONFIG:
+      description: |
+        The content of the sites-config.yaml file. If not provided, it will be downloaded from the
+        walrus-sites repository.
+      required: false
+    WS_RESOURCES:
+      description: |
+        Full-path to the 'ws-resources.json' file. Note site-builder defaults to searching for
+        'ws-resources.json' directly inside the `DIST`.
+      required: false
+    EPOCHS:
+        description: Epochs to keep
+        required: false
+        default: "5"
+    GITHUB_TOKEN:
+        description: |
+          The GITHUB_TOKEN for creating a PR, in case of ws-resources changed during
+          site-publishing.
+          If not provided, the PR creation step will be skipped.
+          When using this, the workflow must have `contents: write` and `pull-requests: write`
+          permissions.
+        required: false
+
+runs:
+    using: "composite"
+    steps:
+        # Display deprecation warning
+        - name: Display Deprecation Warning
+          shell: bash
+          run: |
+            echo "::warning::⚠️ DEPRECATED: This action has moved to MystenLabs/walrus-sites-github-actions"
+            echo "::warning::Please update your workflow to use: MystenLabs/walrus-sites-github-actions/deploy@v1"
+            echo "::warning::This wrapper will be removed in a future release."
+            echo "::warning::See https://github.com/MystenLabs/walrus-sites-github-actions for details."
+
+        # Call the new standalone action
+        - name: Call New Deploy Action
+          uses: MystenLabs/walrus-sites-github-actions/deploy@v1
+          with:
+            SUI_ADDRESS: ${{ inputs.SUI_ADDRESS }}
+            SUI_KEYSTORE: ${{ inputs.SUI_KEYSTORE }}
+            SUI_BECH32_PRIVATE_KEY: ${{ inputs.SUI_BECH32_PRIVATE_KEY }}
+            SUI_SECRET_PHRASE: ${{ inputs.SUI_SECRET_PHRASE }}
+            WALRUS_CONFIG: ${{ inputs.WALRUS_CONFIG }}
+            SUI_NETWORK: ${{ inputs.SUI_NETWORK }}
+            DIST: ${{ inputs.DIST }}
+            SITES_CONFIG: ${{ inputs.SITES_CONFIG }}
+            WS_RESOURCES: ${{ inputs.WS_RESOURCES }}
+            EPOCHS: ${{ inputs.EPOCHS }}
+            GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}

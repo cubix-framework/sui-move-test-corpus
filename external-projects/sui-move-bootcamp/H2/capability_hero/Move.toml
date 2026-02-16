@@ -1,0 +1,5 @@
+[package]
+name = "capability_hero"
+edition = "2024"
+
+[dependencies]

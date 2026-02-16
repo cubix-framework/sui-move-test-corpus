@@ -1,0 +1,5 @@
+[package]
+name = "abilities_events_params"
+edition = "2024"
+
+[dependencies]

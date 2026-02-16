@@ -1,0 +1,5 @@
+[package]
+name = "indexer_sample"
+edition = "2024"
+
+[dependencies]
