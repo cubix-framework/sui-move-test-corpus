@@ -1,0 +1,13 @@
+[package]
+name = "typus_covered_call"
+version = "0.0.1"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework", rev = "devnet" }
+typus_oracle = { git = "https://github.com/Typus-Lab/typus-oracle.git", rev = "main" }
+typus_framework = { local = "../typus_framework" }
+
+
+[addresses]
+typus_covered_call = "0x0"
+sui = "0000000000000000000000000000000000000002"

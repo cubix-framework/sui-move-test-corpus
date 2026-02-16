@@ -1,0 +1,14 @@
+[package]
+name = "Serde"
+version = "0.0.1"
+
+[addresses]
+std = "0x1"
+aptos_framework = "0x1"
+aptos_std = "0x1"
+serde = "_"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "cb4ba0a57c998c60cbab65af31a64875d2588ca5"
+subdir = "aptos-move/framework/aptos-framework"
