@@ -1,0 +1,50 @@
+# See https://nexte.st/docs/configuration/ for configuration parameters.
+
+[profile.default]
+default-filter = 'not package(walrus-performance-tests)'
+fail-fast = false # do not stop at first failure
+slow-timeout = { period = "1m", terminate-after = 5 }
+
+[[profile.default.overrides]]
+filter = 'package(walrus-e2e-tests)'
+threads-required = 4
+
+[profile.ci]
+retries = 1 # retry once for a total of 2 attempts
+slow-timeout = { period = "1m", terminate-after = 10 } # Timeout tests after 10 minutes
+
+[[profile.ci.overrides]]
+filter = 'package(walrus-e2e-tests) or package(walrus-sui) or test(nodes_drive_epoch_change)'
+slow-timeout = { period = "2m", terminate-after = 5 } # Mark E2E tests as slow only after 2 minutes
+threads-required = 4
+
+[[profile.ci.overrides]]
+# We have some tests that keep example files in sync with the code. If the files are not in sync,
+# the test fails and overwrites these example files. If we retry them, they always succeed.
+filter = 'test(~check_and_update)'
+retries = 0 # Do not retry these tests as they always succeed on the second run
+
+[profile.simtest]
+slow-timeout = { period = "5m", terminate-after = 6 } # Timeout tests after 30 minutes
+test-threads = "num-cpus"
+
+[profile.simtestnightly]
+# Print out output for failing tests as soon as they fail, and also at the end
+# of the run (for easy scrollability).
+failure-output = "immediate"
+# Show skipped tests in the CI output.
+status-level = "fail"
+# Do not cancel the test run on the first failure.
+fail-fast = false
+# Mark tests as slow after 30m, terminate after 1.5h
+slow-timeout = { period = "30m", terminate-after = 5 }
+
+[profile.performance-test]
+default-filter = 'package(walrus-performance-tests)'
+retries = 0
+slow-timeout = { period = "15m", terminate-after = 4 }
+test-threads = 1
+
+[[profile.performance-test.overrides]]
+filter = 'test(aggregator)'
+priority = -50

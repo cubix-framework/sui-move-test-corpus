@@ -1,0 +1,10 @@
+[files]
+extend-exclude = [
+  "*.svg",
+  "docs/site/src/plugins/askcookbook/index.js",
+  "mainnet-contracts/",
+  "testnet-contracts/",
+]
+
+[default.extend-identifiers]
+bimap = "bimap"
