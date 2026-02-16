@@ -4,7 +4,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~2,007,000 lines of Move code across ~15,000+ files
+**Total**: ~1,073,000 lines of Move code across ~10,300 unique files (duplicates removed)
 
 ## License Information
 
