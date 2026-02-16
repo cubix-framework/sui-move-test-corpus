@@ -1,0 +1,16 @@
+[package]
+name = "oracle"
+version = "0.0.1"
+
+[dependencies.SupraOracle]
+git = "https://github.com/naviprotocol/supra-oracle.git"
+subdir = "supra_holder"
+rev = "main"
+
+[dependencies.pyth]
+git = "https://github.com/naviprotocol/pyth-crosschain.git"
+subdir = "target_chains/sui/contracts"
+rev = "navi-forked"
+
+[dependencies.switchboard]
+local = "../switchboard_sui/on_demand"

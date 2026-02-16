@@ -1,7 +1,0 @@
-.env*.local
-.source
-dist/
-next-env.d.ts
-
-# Ai Migration
-.ai/**

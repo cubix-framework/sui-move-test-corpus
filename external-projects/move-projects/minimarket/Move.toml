@@ -1,0 +1,11 @@
+[package]
+name = "MiniMarketplace"
+version = "0.1.0"
+authors = ["root28root"]
+
+[addresses]
+minimarket = "0x225b149b3bfc3caabcbb7edf8c855636c0c00131226127e35545556aaf325278"
+std = "0x1"
+
+[dependencies]
+MoveStdlib = { local = "vendor/aptos-core/aptos-move/framework/move-stdlib" }

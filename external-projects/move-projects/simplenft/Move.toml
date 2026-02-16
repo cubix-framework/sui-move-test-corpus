@@ -1,0 +1,11 @@
+[package]
+name = "SimpleNFT"
+version = "0.0.1"
+authors = ["Rootmhz"]
+
+[addresses]
+SimpleNFT = "0xb35962eed27b9a272d82673f2b7a99e7257b7b1a9af02c1a09143dacbaf498bd"
+std = "0x1"
+
+[dependencies]
+MoveStdlib = { local = "../minimarket/vendor/aptos-core/aptos-move/framework/move-stdlib" }

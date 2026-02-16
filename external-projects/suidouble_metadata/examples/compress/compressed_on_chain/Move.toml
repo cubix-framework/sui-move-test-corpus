@@ -1,0 +1,10 @@
+[package]
+name = "compressed_on_chain"
+version = "0.0.1"
+edition = "2024.beta"
+
+[dependencies]
+suidouble_metadata = { local = "../../../metadata" }
+
+[addresses]
+compressed_on_chain =  "0x0"

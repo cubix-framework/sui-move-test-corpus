@@ -1,3 +1,0 @@
-boogie = "~/.dotnet/tools/boogie" 
-z3 =  "~/bin/z3"
-cvc4 = "~/bin/cvc4"

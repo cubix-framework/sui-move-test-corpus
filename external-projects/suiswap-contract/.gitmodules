@@ -1,3 +1,0 @@
-[submodule "submodules/sui"]
-	path = submodules/sui
-	url = https://github.com/MystenLabs/sui.git

@@ -1,6 +1,0 @@
-[toolchain]
-channel = "mainnet"
-
-[components]
-forc = "0.68.9"
-fuel-core = "0.43.2"
