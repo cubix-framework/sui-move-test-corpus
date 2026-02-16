@@ -1,0 +1,26 @@
+[dependencies]
+actix = { workspace = true }
+actix-rt = { workspace = true }
+anyhow = { workspace = true }
+futures = { workspace = true }
+futures-timer = { workspace = true }
+log = { workspace = true }
+once_cell = { workspace = true }
+schemars = { workspace = true }
+serde = { features = ["derive"], workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+stest = { workspace = true }
+
+[package]
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+name = "starcoin-service-registry"
+publish = { workspace = true }
+version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
