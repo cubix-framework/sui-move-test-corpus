@@ -1,0 +1,14 @@
+[package]
+name = "KaiLeverageSupplyPoolInitWhusdte"
+edition = "2024.beta"
+license = "Apache 2.0"
+authors = ["Krešimir Klas (kklas@kunalabs.io)"]
+published-at = "0x358b47a13abe067fe4054e414f4ee1d1524236cc60ffc716ec10931c5dbec795"
+
+[dependencies]
+KaiLeverage = { local = "../../core" }
+KaiLeverageSupplyPoolInit = { local = "../core" }
+WHUSDTE = { local = "../../../../_vendor/whUSDTe" }
+
+[addresses]
+klsp_whusdte = "0x358b47a13abe067fe4054e414f4ee1d1524236cc60ffc716ec10931c5dbec795"

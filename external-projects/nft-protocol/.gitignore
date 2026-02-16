@@ -1,0 +1,17 @@
+.vscode
+
+sui.log.*
+.env
+.env.caps.*
+.env.pubs
+build
+target
+output.bpl
+.coverage_*
+.trace
+boilerplate
+.DS_Store
+local
+unpublished
+bin/pub.py
+logs
