@@ -4,7 +4,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~787,000 lines of Move code across ~8,900 files
+**Total**: ~2,007,000 lines of Move code across ~15,000+ files
 
 ## License Information
 
@@ -63,15 +63,37 @@ All Move code in this corpus comes with clear, permissive open-source licenses:
 | **move-prover-examples** (Zellic) | 8 | 294 | Apache 2.0 | Via org |
 | **encrypted-nft-poc** (MystenLabs) | 1 | 229 | Apache 2.0 | Yes |
 | **pysui** | 1 | 113 | Apache 2.0 | Yes |
+| **sui-framework-full** (MystenLabs) | 3,200+ | 141,775 | Apache 2.0 | Yes |
+| **rooch** (Rooch Network) | 1,000+ | 135,977 | Apache 2.0 | Yes |
+| **move-on-aptos** | 2,000+ | 128,229 | Apache 2.0 | Yes |
+| **solana-move** | 1,200+ | 82,632 | Apache 2.0 | Yes |
+| **move-lang-core** | 1,200+ | 75,757 | Apache 2.0 | Yes |
+| **diem** (Diem Blockchain) | 900+ | 71,393 | Apache 2.0 | Yes |
+| **starcoin** | 900+ | 62,659 | Apache 2.0 | Yes |
+| **walrus** (MystenLabs) | 350+ | 49,351 | Apache 2.0 | Yes |
+| **movefmt** | 1,200+ | 35,729 | Apache 2.0 | Yes |
+| **mvr** (MystenLabs) | 350+ | 18,600 | Apache 2.0 | Yes |
+| **capsules** (Sui-Potatoes) | 120+ | 18,500 | MIT | Yes |
+| **OmniSwap** | 250+ | 17,514 | GPL v3 | Yes |
+| **movefuns** | 200+ | 15,785 | Apache 2.0 | Yes |
+| **starcoin-framework-commons** | 100+ | 5,000 | Apache 2.0 | Yes |
+| **legato-finance** | 100+ | 7,000 | MIT No Attribution | Yes |
+| **starcoin-ide** | 25+ | 586 | MIT | Yes |
+| **starcoin-cookbook** | 350+ | 4,850 | Apache 2.0 | Yes |
+| **pokemon** | 25+ | 1,800 | MIT | Yes |
+| **suidouble** | 15+ | 457 | Apache 2.0 | Yes |
+| **mysten-sui-full** (MystenLabs) | 4,065 | 210,149 | Apache 2.0 | Yes |
+| **move-language-repo** | 1,675 | 75,757 | Apache 2.0 | Yes |
 
 ### License Summary
 
 | License | Projects | Lines of Move Code |
 |---------|----------|-------------------|
-| **Apache 2.0** | ~35 | ~700,000 |
-| **MIT** | 7 | ~55,000 |
+| **Apache 2.0** | ~55 | ~1,900,000 |
+| **MIT** | 11 | ~80,000 |
 | **Viral Public License** | 1 | ~44,000 |
 | **CC BY-SA 4.0** | 1 | ~1,500 |
+| **GPL v3** | 1 | ~17,500 |
 
 ### License Notes
 
