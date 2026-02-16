@@ -4,7 +4,9 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~1,044,000 lines of Move code across ~9,900 unique files (duplicates removed)
+**Total**: ~1,280,000 lines of Move code across ~11,700 unique files (duplicates removed)
+
+**Note on Line Count**: While we've cloned repositories totaling over 2M lines of Move code, the Move ecosystem shares substantial framework code across projects. After deduplication, the unique code is approximately 1.28M lines. Reaching 2M unique lines would require finding significantly more original Move application code that doesn't duplicate existing framework code.
 
 ## License Information
 
@@ -82,15 +84,32 @@ All Move code in this corpus comes with clear, permissive open-source licenses:
 | **suidouble** | 15+ | 457 | Apache 2.0 | Yes |
 | **mysten-sui-full** (MystenLabs) | 4,065 | 210,149 | Apache 2.0 | Yes |
 | **move-language-repo** | 1,675 | 75,757 | Apache 2.0 | Yes |
+| **mysten-sui-latest** (MystenLabs) | 3,500+ | 210,146 | Apache 2.0 | Yes |
+| **move-lang-extra** | 1,200+ | 75,754 | Apache 2.0 | Yes |
+| **iota** (IOTA Foundation) | 3,500+ | 207,322 | Apache 2.0 | Yes |
+| **rooch-extra** (Rooch Network) | 1,000+ | 135,974 | Apache 2.0 | Yes |
+| **mango** (MangoNet Labs) | 2,500+ | 110,642 | Apache 2.0 | Yes |
+| **solana-move-extra** | 1,200+ | 82,629 | Apache 2.0 | Yes |
+| **diem-extra** (Diem) | 900+ | 71,393 | Apache 2.0 | Yes |
+| **sui-analyzer-v2** (movebit) | 2,200+ | 68,609 | Apache 2.0 | Yes |
+| **starcoin-extra** (Starcoin) | 900+ | 62,659 | Apache 2.0 | Yes |
+| **wormhole-extra** | 100+ | 26,278 | Apache 2.0 | Yes |
+| **walrus-docs-extra** (MystenLabs) | 60+ | 14,604 | Apache 2.0 | Yes |
+| **axelar-sui** (Axelar) | 80+ | 12,979 | MIT | Yes |
+| **aptos-token-minter** | 60+ | 9,667 | Apache 2.0 | Yes |
+| **integer-mate** (Cetus) | 16+ | 4,185 | MIT | Yes |
+| **mvr-extra** (MystenLabs) | 40+ | 2,034 | Apache 2.0 | Yes |
+| **sui-move-intro** | 20+ | 1,461 | CC BY-SA 4.0 | Yes |
+| **taohe** | 12+ | 837 | Apache 2.0 | Yes |
 
 ### License Summary
 
 | License | Projects | Lines of Move Code |
 |---------|----------|-------------------|
-| **Apache 2.0** | ~50 | ~900,000 |
-| **MIT** | 11 | ~80,000 |
+| **Apache 2.0** | ~65 | ~1,100,000 |
+| **MIT** | 14 | ~100,000 |
 | **Viral Public License** | 1 | ~44,000 |
-| **CC BY-SA 4.0** | 1 | ~1,500 |
+| **CC BY-SA 4.0** | 2 | ~3,000 |
 | **GPL v3** | 1 | ~17,500 |
 
 ### License Notes
