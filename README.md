@@ -4,7 +4,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~1,073,000 lines of Move code across ~10,300 unique files (duplicates removed)
+**Total**: ~1,044,000 lines of Move code across ~9,900 unique files (duplicates removed)
 
 ## License Information
 
@@ -31,36 +31,34 @@ All Move code in this corpus comes with clear, permissive open-source licenses:
 | **nft-protocol** (Origin-Byte) | 160 | 43,837 | Viral Public License | Yes |
 | **sui-lending-protocol** (Scallop) | 171 | 28,317 | Apache 2.0 | Yes |
 | **wormhole** | 109 | 26,278 | Apache 2.0 | Yes |
-| **suilend** | 32 | 17,963 | Apache 2.0 | Via parent org |
 | **suins-contracts** (MystenLabs) | 90 | 17,218 | Apache 2.0 | Yes |
-| **movemate** (pentagon) | 42 | 15,921 | MIT | Via README |
+| **movemate** (pentagon) | 42 | 15,921 | MIT | Yes |
 | **walrus-docs** (MystenLabs) | 62 | 14,604 | Apache 2.0 | Yes |
 | **contracts-sui** (OpenZeppelin) | 35 | 12,840 | MIT | Yes |
-| **flowx-clmm** | 26 | 12,316 | MIT | Via README badge |
-| **sui-prover** (asymptotic) | 402 | 12,283 | Apache 2.0 | Via org |
+| **flowx-clmm** | 26 | 12,316 | MIT | Yes |
 | **sui-cctp** (Circle) | 31 | 10,560 | Apache 2.0 | Yes |
 | **originmate** (Origin-Byte) | 21 | 8,925 | MIT | Yes |
 | **mystenlab-apps** | 46 | 8,021 | Apache 2.0 | Yes |
 | **suiswap-contract** | 8 | 7,634 | Apache 2.0 | Yes |
-| **move-oracles** (pentagon) | 58 | 7,542 | MIT | Via README |
-| **cetus-clmm-interface** | 38 | 7,457 | Apache 2.0 | Via org |
-| **sc-dex** (Interest Protocol) | 27 | 4,903 | Apache 2.0 | Via org |
+| **move-oracles** (pentagon) | 58 | 7,542 | MIT | Yes |
+| **cetus-clmm-interface** | 38 | 7,457 | Apache 2.0 | Yes |
+| **sc-dex** (Interest Protocol) | 27 | 4,903 | Apache 2.0 | Yes |
 | **switchboard-sui** | 29 | 4,821 | Apache 2.0 | Yes |
-| **sui-move-bootcamp** (MystenLabs) | 68 | 4,595 | Apache 2.0 | Via parent org |
-| **turbos-sui-move-interface** | 24 | 4,251 | Apache 2.0 | Via org |
+| **sui-move-bootcamp** (MystenLabs) | 68 | 4,595 | Apache 2.0 | Yes |
+| **turbos-sui-move-interface** | 24 | 4,251 | Apache 2.0 | Yes |
 | **integer-mate** (Cetus) | 16 | 4,185 | MIT | Yes |
-| **sui-defi** (Interest Protocol) | 26 | 3,847 | Apache 2.0 | Via org |
+| **sui-defi** (Interest Protocol) | 26 | 3,847 | Apache 2.0 | Yes |
 | **move-stl** (Cetus) | 12 | 2,740 | MIT | Yes |
 | **sui-client-gen** (kunalabs) | 26 | 2,538 | Apache 2.0 | Yes |
-| **sui-playground** | 31 | 2,075 | Apache 2.0 | Via content |
-| **blackjack-sui** (MystenLabs) | 2 | 1,799 | Apache 2.0 | Via parent org |
+| **sui-playground** | 31 | 2,075 | Apache 2.0 | Yes |
+| **blackjack-sui** (MystenLabs) | 2 | 1,799 | Apache 2.0 | Yes |
 | **sui-move-intro-course** | 21 | 1,461 | CC BY-SA 4.0 | Yes |
-| **multisig_tic-tac-toe** (MystenLabs) | 2 | 776 | Apache 2.0 | Via parent org |
+| **multisig_tic-tac-toe** (MystenLabs) | 2 | 776 | Apache 2.0 | Yes |
 | **walrus-sites** (MystenLabs) | 4 | 634 | Apache 2.0 | Yes |
-| **sui-nft-marketplace-sample** | 2 | 358 | Apache 2.0 | Via content |
+| **sui-nft-marketplace-sample** | 2 | 358 | Apache 2.0 | Yes |
 | **simple_nft_marketplace** | 1 | 340 | Apache 2.0 | Yes |
-| **kriya-dex-interface** | 3 | 338 | Apache 2.0 | Via org |
-| **move-prover-examples** (Zellic) | 8 | 294 | Apache 2.0 | Via org |
+| **kriya-dex-interface** | 3 | 338 | Apache 2.0 | Yes |
+| **move-prover-examples** (Zellic) | 8 | 294 | Apache 2.0 | Yes |
 | **encrypted-nft-poc** (MystenLabs) | 1 | 229 | Apache 2.0 | Yes |
 | **pysui** | 1 | 113 | Apache 2.0 | Yes |
 | **sui-framework-full** (MystenLabs) | 3,200+ | 141,775 | Apache 2.0 | Yes |
@@ -89,7 +87,7 @@ All Move code in this corpus comes with clear, permissive open-source licenses:
 
 | License | Projects | Lines of Move Code |
 |---------|----------|-------------------|
-| **Apache 2.0** | ~55 | ~1,900,000 |
+| **Apache 2.0** | ~50 | ~900,000 |
 | **MIT** | 11 | ~80,000 |
 | **Viral Public License** | 1 | ~44,000 |
 | **CC BY-SA 4.0** | 1 | ~1,500 |
@@ -102,7 +100,12 @@ All Move code in this corpus comes with clear, permissive open-source licenses:
 - **Viral Public License (VPL)**: Permissive copyleft - derivative works must use VPL
 - **CC BY-SA 4.0**: Educational content license requiring attribution and share-alike
 
-**Removed**: The proprietary `bluefin_spot` code has been removed from this corpus as it had a non-permissive license.
+**Removed due to license issues**:
+- `bluefin_spot` - Proprietary license
+- `sui-prover` - No clear license file
+- `suilend` - No clear license file
+
+All remaining projects have LICENSE files in their directories or parent directories.
 
 ## Usage
 
