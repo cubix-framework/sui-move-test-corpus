@@ -1,0 +1,36 @@
+[package]
+name = "rooch-pipeline-processor"
+
+# Workspace inherited keys
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+bcs = { workspace = true }
+bitcoin = { workspace = true }
+coerce = { workspace = true }
+function_name = { workspace = true }
+hex = { workspace = true }
+tracing = { workspace = true }
+prometheus = { workspace = true }
+
+moveos = { workspace = true }
+metrics = { workspace = true }
+moveos-types = { workspace = true }
+
+bitcoin-client = { workspace = true }
+rooch-da = { workspace = true }
+rooch-db = { workspace = true }
+rooch-executor = { workspace = true }
+rooch-notify = { workspace = true }
+rooch-indexer = { workspace = true }
+rooch-sequencer = { workspace = true }
+rooch-types = { workspace = true }
