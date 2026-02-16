@@ -1,0 +1,47 @@
+[[bench]]
+harness = false
+name = "bench_merkle_tree"
+
+[dependencies]
+anyhow = { workspace = true }
+backtrace = { workspace = true }
+bcs-ext = { workspace = true }
+byteorder = { workspace = true }
+hex = { workspace = true }
+mirai-annotations = { workspace = true }
+num-derive = { workspace = true }
+num-traits = { workspace = true }
+proptest = { optional = true, workspace = true }
+proptest-derive = { optional = true, workspace = true }
+serde = { features = ["derive"], workspace = true }
+serde_bytes = { workspace = true }
+starcoin-crypto = { workspace = true }
+starcoin-logger = { workspace = true }
+thiserror = { workspace = true }
+parking_lot = { workspace = true }
+
+[dev-dependencies]
+bcs = { workspace = true }
+criterion = { workspace = true }
+proptest = { workspace = true }
+proptest-derive = { workspace = true }
+rand = { workspace = true }
+rand_core = { workspace = true }
+starcoin-crypto = { workspace = true }
+rand_0_7_3 = { workspace = true }
+
+[features]
+default = []
+fuzzing = ["proptest", "proptest-derive", "starcoin-crypto/fuzzing"]
+
+[package]
+authors = { workspace = true }
+description = "Diem jellyfish merkle"
+edition = { workspace = true }
+license = { workspace = true }
+name = "forkable-jellyfish-merkle"
+publish = { workspace = true }
+version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }

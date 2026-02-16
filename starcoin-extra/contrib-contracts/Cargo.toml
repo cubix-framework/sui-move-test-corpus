@@ -1,0 +1,31 @@
+[dependencies]
+
+[dev-dependencies]
+starcoin-crypto = { workspace = true }
+starcoin-executor = { workspace = true }
+starcoin-state-api = { workspace = true }
+starcoin-types = { workspace = true }
+starcoin-vm-types = { workspace = true }
+test-helper = { workspace = true }
+anyhow = { workspace = true }
+bcs-ext = { workspace = true }
+ethereum-types = { workspace = true }
+hex = { workspace = true }
+rlp = { workspace = true }
+rlp-derive = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+stdlib = { workspace = true }
+stest = { workspace = true }
+tempfile = { workspace = true }
+
+[package]
+authors = { workspace = true }
+edition = { workspace = true }
+name = "contrib-contracts"
+version = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
