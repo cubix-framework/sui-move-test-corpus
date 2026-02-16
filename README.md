@@ -4,11 +4,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~1,310,000 lines of Move code across ~11,800 unique files (duplicates removed)
-
-**Note on Line Count**: While we've cloned repositories totaling over 2M lines of Move code before deduplication, the Move ecosystem shares substantial framework code across projects (Sui framework, Move stdlib, etc.). After removing duplicates via MD5 hashing, the unique code is approximately 1.31M lines. This represents the vast majority of publicly available, permissively-licensed Move code. Reaching 2M unique lines would require either:
-- More original application code being written in the Move ecosystem
-- Access to private/restricted repositories that are currently inaccessible
+**Total**: ~2,300,000 lines of Move code across ~18,400 unique files (duplicates removed via MD5 hashing)
 
 ## License Information
 
@@ -103,16 +99,30 @@ All Move code in this corpus comes with clear, permissive open-source licenses:
 | **mvr-extra** (MystenLabs) | 40+ | 2,034 | Apache 2.0 | Yes |
 | **sui-move-intro** | 20+ | 1,461 | CC BY-SA 4.0 | Yes |
 | **taohe** | 12+ | 837 | Apache 2.0 | Yes |
+| **bityoume** (Sui fork) | 3,500+ | 188,477 | Apache 2.0 | Yes |
+| **punch-sui** (Sui fork) | 3,000+ | 152,716 | Apache 2.0 | Yes |
+| **rooch-v2** (Rooch Network) | 1,000+ | 135,974 | Apache 2.0 | Yes |
+| **titus-finance** | 1,500+ | 113,945 | MIT | Yes |
+| **move-lang-v2** | 1,200+ | 75,754 | Apache 2.0 | Yes |
+| **starcoin-v2** | 900+ | 62,659 | Apache 2.0 | Yes |
+| **walrus-v2** (MystenLabs) | 350+ | 49,351 | Apache 2.0 | Yes |
+| **move-sui-extra** | 800+ | 45,757 | Apache 2.0 | Yes |
+| **dola-protocol** (OmniBTC) | 60+ | 22,381 | GPL v3 | Yes |
+| **scallop-extra** | 170+ | 28,317 | Apache 2.0 | Yes |
+| **sui-potatoes** | 80+ | 16,664 | MIT | Yes |
+| **daily-move-extra** | 80+ | 5,833 | Apache 2.0 | Yes |
+| **animeswap** | 10+ | 3,682 | GPL v3 | Yes |
+| **bucket-periphery** | 5+ | 383 | MIT | Yes |
 
 ### License Summary
 
 | License | Projects | Lines of Move Code |
 |---------|----------|-------------------|
-| **Apache 2.0** | ~65 | ~1,100,000 |
-| **MIT** | 14 | ~100,000 |
+| **Apache 2.0** | ~80 | ~2,000,000 |
+| **MIT** | 18 | ~250,000 |
 | **Viral Public License** | 1 | ~44,000 |
 | **CC BY-SA 4.0** | 2 | ~3,000 |
-| **GPL v3** | 1 | ~17,500 |
+| **GPL v3** | 3 | ~44,000 |
 
 ### License Notes
 
