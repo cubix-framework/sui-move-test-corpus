@@ -1,0 +1,203 @@
+[package]
+name = "walrus-service"
+publish = false
+authors.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "walrus"
+path = "bin/client.rs"
+required-features = ["client"]
+
+[[bin]]
+name = "walrus-node"
+path = "bin/node.rs"
+required-features = ["node"]
+
+[[bin]]
+name = "walrus-deploy"
+path = "bin/deploy.rs"
+required-features = ["deploy"]
+
+[[bin]]
+name = "walrus-backup"
+path = "bin/backup.rs"
+required-features = ["backup"]
+
+[features]
+backup = [
+  "dep:bytes",
+  "dep:diesel",
+  "dep:diesel-async",
+  "dep:diesel_migrations",
+  "dep:md5",
+  "dep:object_store",
+  "dep:scoped-futures",
+]
+client = [
+  "dep:colored",
+  "dep:libc",
+  "dep:object_store",
+  "dep:prettytable",
+]
+default = ["client", "deploy", "node"]
+deploy = ["client", "node", "walrus-sui/test-utils"]
+node = [
+  "dep:async-trait",
+  "dep:bincode",
+  "dep:checkpoint-downloader",
+  "dep:enum_dispatch",
+  "dep:mime",
+  "dep:mysten-metrics",
+  "dep:rocksdb",
+  "dep:tokio-stream",
+  "dep:tokio-util",
+  "dep:typed-store",
+  "dep:x509-cert",
+]
+test-utils = [
+  "client",
+  "dep:tempfile",
+  "dep:walrus-test-utils",
+  "node",
+  "walrus-core/test-utils",
+  "walrus-sui/test-utils",
+]
+
+[dependencies]
+anyhow.workspace = true
+async-trait = { workspace = true, optional = true }
+axum = { workspace = true, features = [
+  "http1",
+  "http2",
+  "json",
+  "matched-path",
+  "query",
+  "tokio",
+  "tower-log",
+  "tracing",
+] }
+axum-extra = { workspace = true, features = ["multipart", "query", "typed-header"] }
+axum-server = { workspace = true, features = ["tls-rustls-no-provider"] }
+base64.workspace = true
+bcs.workspace = true
+bincode = { workspace = true, optional = true }
+byteorder.workspace = true
+bytes = { workspace = true, optional = true }
+bytesize.workspace = true
+checkpoint-downloader = { workspace = true, optional = true }
+chrono.workspace = true
+clap.workspace = true
+clap_complete.workspace = true
+colored = { workspace = true, optional = true }
+diesel = { workspace = true, optional = true }
+diesel-async = { workspace = true, optional = true }
+diesel_migrations = { workspace = true, optional = true }
+enum_dispatch = { workspace = true, optional = true }
+fastcrypto.workspace = true
+flate2 = "1"
+futures.workspace = true
+futures-util.workspace = true
+headers.workspace = true
+home.workspace = true
+hostname.workspace = true
+http-body = "1.0.1"
+http-range-header.workspace = true
+humantime.workspace = true
+indexmap.workspace = true
+indicatif.workspace = true
+indoc.workspace = true
+integer-encoding.workspace = true
+itertools.workspace = true
+jsonwebtoken.workspace = true
+libc = { workspace = true, optional = true }
+md5 = { workspace = true, optional = true }
+mime = { workspace = true, optional = true }
+moka = { version = "0.12.13", features = ["future"] }
+move-core-types.workspace = true
+mysten-metrics = { workspace = true, optional = true }
+num-bigint.workspace = true
+object_store = { workspace = true, optional = true }
+opentelemetry.workspace = true
+opentelemetry-otlp = { workspace = true, features = ["grpc-tonic"] }
+opentelemetry-proto.workspace = true
+opentelemetry-semantic-conventions.workspace = true
+opentelemetry_sdk.workspace = true
+p256.workspace = true
+pin-project.workspace = true
+prettytable = { workspace = true, optional = true }
+prometheus.workspace = true
+prost = { workspace = true, features = ["std"] }
+rand.workspace = true
+rayon.workspace = true
+rcgen.workspace = true
+regex.workspace = true
+reqwest.workspace = true
+rocksdb = { workspace = true, optional = true }
+rustls.workspace = true
+rustls-native-certs.workspace = true
+scoped-futures = { workspace = true, optional = true }
+serde.workspace = true
+serde_json.workspace = true
+serde_test.workspace = true
+serde_with.workspace = true
+serde_yaml.workspace = true
+sha2.workspace = true
+snap.workspace = true
+sui-config.workspace = true
+sui-macros.workspace = true
+sui-package-resolver.workspace = true
+sui-protocol-config.workspace = true
+sui-rpc-api.workspace = true
+sui-sdk.workspace = true
+sui-storage.workspace = true
+sui-types.workspace = true
+telemetry-subscribers.workspace = true
+tempfile = { workspace = true, optional = true }
+thiserror.workspace = true
+tokio.workspace = true
+tokio-metrics.workspace = true
+tokio-stream = { workspace = true, optional = true }
+tokio-util = { workspace = true, optional = true }
+tower = { workspace = true, features = ["buffer", "limit", "load-shed", "util"] }
+tower-http.workspace = true
+tracing.workspace = true
+tracing-opentelemetry.workspace = true
+tracing-subscriber.workspace = true
+twox-hash.workspace = true
+typed-store = { workspace = true, optional = true }
+utoipa = { workspace = true, features = ["axum_extras", "macros", "yaml"] }
+utoipa-redoc.workspace = true
+uuid.workspace = true
+walrus-core = { workspace = true, features = ["sui-types", "utoipa"] }
+walrus-proc-macros = { workspace = true, features = ["derive-api-errors"] }
+walrus-sdk = { workspace = true, features = ["test-utils"] }
+walrus-storage-node-client.workspace = true
+walrus-sui = { workspace = true, features = ["utoipa"] }
+walrus-test-utils = { workspace = true, optional = true }
+walrus-utils = { workspace = true, features = ["backoff", "config", "http", "log", "metrics", "tokio-metrics"] }
+x509-cert = { workspace = true, optional = true }
+zstd = "0.13.3"
+
+[dev-dependencies]
+hex.workspace = true
+http-body-util.workspace = true
+mockall.workspace = true
+rcgen = { workspace = true, features = ["pem"] }
+ring = "0.17.14"
+tempfile.workspace = true
+walrus-core = { workspace = true, features = ["test-utils"] }
+walrus-proc-macros = { workspace = true, features = ["walrus-simtest"] }
+walrus-test-utils.workspace = true
+walrus-utils = { workspace = true, features = ["test-utils"] }
+
+[build-dependencies]
+chrono.workspace = true
+
+[lints]
+workspace = true
+
+[target.'cfg(msim)'.dependencies]
+sui-simulator.workspace = true
