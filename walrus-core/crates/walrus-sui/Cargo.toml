@@ -1,0 +1,98 @@
+[package]
+name = "walrus-sui"
+publish = false
+authors.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+default = []
+test-utils = [
+  "dep:tempfile",
+  "dep:test-cluster",
+  "dep:walrus-test-utils",
+  "walrus-core/test-utils",
+]
+utoipa = [
+  "dep:utoipa",
+]
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+atomic-time.workspace = true
+bcs.workspace = true
+bytes.workspace = true
+chrono.workspace = true
+clap.workspace = true
+fastcrypto.workspace = true
+futures.workspace = true
+futures-util.workspace = true
+home.workspace = true
+jsonrpsee.workspace = true
+move-core-types.workspace = true
+move-package.workspace = true
+move-package-alt.workspace = true
+move-package-alt-compilation.workspace = true
+mysten-metrics.workspace = true
+prometheus.workspace = true
+rand.workspace = true
+regex.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+sui-config.workspace = true
+sui-json-rpc-api.workspace = true
+sui-keys.workspace = true
+sui-macros.workspace = true
+sui-move-build.workspace = true
+sui-package-alt.workspace = true
+sui-package-management.workspace = true
+sui-rpc.workspace = true
+sui-rpc-api.workspace = true
+sui-sdk.workspace = true
+sui-sdk-types.workspace = true
+sui-storage.workspace = true
+sui-types.workspace = true
+tempfile = { workspace = true, optional = true }
+test-cluster = { workspace = true, optional = true }
+thiserror.workspace = true
+tokio = { workspace = true, features = ["fs", "sync", "test-util"] }
+tokio-stream.workspace = true
+tonic.workspace = true
+tracing.workspace = true
+url.workspace = true
+urlencoding.workspace = true
+utoipa = { workspace = true, optional = true, features = ["axum_extras", "macros", "yaml"] }
+walkdir = "2.5.0"
+walrus-core = { workspace = true, features = ["sui-types", "utoipa"] }
+walrus-test-utils = { workspace = true, optional = true }
+walrus-utils = { workspace = true, features = ["backoff", "config", "log", "metrics"] }
+
+[dev-dependencies]
+clap.workspace = true
+indoc.workspace = true
+serde_yaml.workspace = true
+tempfile.workspace = true
+test-cluster.workspace = true
+tracing-subscriber.workspace = true
+walrus-core = { workspace = true, features = ["sui-types", "test-utils", "utoipa"] }
+walrus-test-utils.workspace = true
+
+[build-dependencies]
+inflections = "1.1.1"
+regex.workspace = true
+walkdir = "2.5.0"
+
+[lints]
+workspace = true
+
+[target.'cfg(msim)'.dependencies]
+sui-simulator.workspace = true
+
+[[bench]]
+name = "gas_cost_bench"
+harness = false
+required-features = ["test-utils"]

@@ -1,0 +1,116 @@
+# This section is considered when running `cargo deny check advisories`
+# More documentation for the advisories section can be found here:
+# https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
+[advisories]
+version = 2
+ignore = [
+  # We depend on `rsa` via `fastcrypto` but don't actually use it.
+  "RUSTSEC-2023-0071",
+  # `rust-yaml` is not maintained, but is a dependency in many of our packages.
+  "RUSTSEC-2024-0320",
+  # `proc-macro-error` is not maintained, but is a dependency in many of our packages.
+  "RUSTSEC-2024-0370",
+  # `instance` is unmaintained; consider using `web-time`.
+  "RUSTSEC-2024-0384",
+  # `derivative` is unmaintained.
+  "RUSTSEC-2024-0388",
+  # `paste` is unmaintained.
+  "RUSTSEC-2024-0436",
+  # `backoff` is unmaintained.
+  "RUSTSEC-2025-0012",
+  # Crash due to uncontrolled recursion in `protobuf` crate.
+  "RUSTSEC-2024-0437",
+  # `fxhash` is unmaintained; it is used in `sui-config`.
+  "RUSTSEC-2025-0057",
+  # `number_prefix` is unmaintained; it is a dependency of many sui crates.
+  "RUSTSEC-2025-0119",
+  # `rustls-pemfile` is unmaintained; it is an indirect dependency through various crates.
+  "RUSTSEC-2025-0134",
+]
+
+
+# This section is considered when running `cargo deny check licenses`
+# More documentation for the licenses section can be found here:
+# https://embarkstudios.github.io/cargo-deny/checks/licenses/cfg.html
+[licenses]
+version = 2
+# List of explicitly allowed licenses
+# See https://spdx.org/licenses/ for list of possible licenses
+# [possible values: any SPDX 3.11 short identifier (+ optional exception)].
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSL-1.0", # allowed by sui
+  "CC0-1.0",
+  "CDLA-Permissive-2.0",
+  "ISC",
+  "MIT",
+  "MPL-2.0",
+  "Unicode-3.0",
+  "Unlicense",
+  "Zlib",
+]
+# The confidence threshold for detecting a license from license text.
+# The higher the value, the more closely the license text must be to the
+# canonical license text of a valid SPDX license file.
+# [possible values: any between 0.0 and 1.0].
+confidence-threshold = 0.8
+
+[licenses.private]
+# If true, ignores workspace crates that aren't published, or are only
+# published to private registries.
+# To see how to mark a crate as unpublished (to the official registry),
+# visit https://doc.rust-lang.org/cargo/reference/manifest.html#the-publish-field.
+ignore = true
+
+# This section is considered when running `cargo deny check bans`.
+# More documentation about the 'bans' section can be found here:
+# https://embarkstudios.github.io/cargo-deny/checks/bans/cfg.html
+[bans]
+# Lint level for when multiple versions of the same crate are detected
+multiple-versions = "deny"
+skip = [
+  { name = "itertools", version = "<=12.1" },
+  { name = "petgraph", version = "0.6.5" },
+  { name = "synstructure", version = "0.12.6" },
+]
+skip-tree = [
+  # Mysten's libraries pull in several conflicting repo versions.
+  { name = "axum", depth = 4 },
+  { name = "fastcrypto", depth = 4 },
+  { name = "test-cluster", depth = 6 },
+  { name = "typed-store", depth = 6 },
+  # several crates depend on an older version of windows and windows-sys
+  { name = "windows-sys", depth = 3, version = "0.48" },
+]
+deny = [
+  # TODO: Remove the following three lines after removing SSH. (#221)
+  { name = "libssh2-sys", wrappers = ["ssh2"] },
+  { name = "openssl-sys", wrappers = ["libssh2-sys"] },
+  { name = "ssh2", wrappers = ["walrus-orchestrator"] },
+]
+
+# This section is considered when running `cargo deny check sources`.
+# More documentation about the 'sources' section can be found here:
+# https://embarkstudios.github.io/cargo-deny/checks/sources/cfg.html
+[sources]
+# Lint level for what to happen when a crate from a crate registry that is not
+# in the allow list is encountered
+unknown-registry = "deny"
+# Lint level for what to happen when a crate from a git repository that is not
+# in the allow list is encountered
+unknown-git = "deny"
+allow-git = [
+  "https://github.com/asonnino/prometheus-parser",
+  "https://github.com/bmwill/axum-server",
+  "https://github.com/mystenmark/async-task",
+  "https://github.com/zhiburt/tabled",
+]
+
+[sources.allow-org]
+# github.com organizations to allow git sources for
+github = [
+  "MystenLabs",
+]

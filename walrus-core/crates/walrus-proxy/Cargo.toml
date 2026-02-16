@@ -1,0 +1,45 @@
+[package]
+name = "walrus-proxy"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+axum-extra = { workspace = true, features = ["typed-header"] }
+base64.workspace = true
+bytes.workspace = true
+clap.workspace = true
+const-str.workspace = true
+fastcrypto.workspace = true
+futures.workspace = true
+hyper.workspace = true
+itertools.workspace = true
+once_cell = "1.21.3"
+prometheus.workspace = true
+prost.workspace = true
+protobuf = { version = "2.28", features = ["with-bytes"] }
+rand.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+serde_yaml.workspace = true
+snap.workspace = true
+sui-sdk.workspace = true
+sui-types.workspace = true
+tokio.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+uuid.workspace = true
+walrus-sui.workspace = true
+walrus-utils = { workspace = true, features = ["backoff", "metrics"] }
+
+
+[lints]
+workspace = true

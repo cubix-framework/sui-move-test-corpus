@@ -1,0 +1,217 @@
+[workspace]
+default-members = [
+  "crates/checkpoint-downloader",
+  "crates/typed-store",
+  "crates/walrus-core",
+  "crates/walrus-e2e-tests",
+  "crates/walrus-indexer",
+  "crates/walrus-proc-macros",
+  "crates/walrus-proxy",
+  "crates/walrus-sdk",
+  "crates/walrus-service",
+  "crates/walrus-simtest",
+  "crates/walrus-storage-node-client",
+  "crates/walrus-stress",
+  "crates/walrus-sui",
+  "crates/walrus-test-utils",
+  "crates/walrus-upload-relay",
+  "crates/walrus-utils",
+]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+authors = ["Mysten Labs <build@mystenlabs.com>"]
+edition = "2024"
+license = "Apache-2.0"
+version = "1.43.0"
+
+[workspace.dependencies]
+anyhow = "1.0.100"
+async-channel = "2.5.0"
+async-trait = "0.1.89"
+atomic-time = "0.1.5"
+axum = { version = "0.8", default-features = false, features = ["http2", "tokio"] }
+axum-extra = { version = "0.10" }
+axum-server = { version = "0.8.0", default-features = false }
+base64 = "0.22.1"
+bcs = "0.1.6"
+bimap = "0.6.3"
+bincode = "1.3.3"
+byteorder = "1.5.0"
+bytes = { version = "1.11.0", default-features = false, features = ["serde"] }
+bytesize = "2.3"
+checkpoint-downloader = { path = "crates/checkpoint-downloader" }
+chrono = "0.4"
+clap = { version = "4.5.55", features = ["deprecated", "derive"] }
+clap_complete = "4.5.65"
+collectable = "0.0.2"
+colored = "2.2.0"
+const-str = "0.6.4"
+criterion = "0.8.1"
+diesel = { version = "2.2", features = ["chrono", "postgres", "serde_json", "uuid"] }
+diesel-async = { version = "0.5", features = ["postgres"] }
+diesel_migrations = { version = "2.2.0", features = ["postgres"] }
+enum_dispatch = "0.3"
+eyre = "0.6.12"
+fastcrypto = { git = "https://github.com/MystenLabs/fastcrypto", rev = "4db0e90c732bbf7420ca20de808b698883148d9c" }
+fdlimit = "0.3.0"
+futures = { version = "0.3.31", default-features = false, features = ["async-await", "std"] }
+futures-timer = "=3.0.3" # required for MSIM
+futures-util = "0.3.30"
+git-version = "0.3.9"
+hdrhistogram = "7.5.4"
+headers = "0.4.1"
+hex = "0.4.3"
+home = "0.5.12"
+hostname = "0.4.2"
+http-body-util = "0.1.1"
+http-range-header = "0.4.2"
+humantime = "2.3.0"
+hyper = "1"
+indexmap = "2.13.0"
+indicatif = "0.18.3"
+indoc = "2.0.7"
+integer-encoding = "4.1.0"
+itertools = "0.14.0"
+jsonrpsee = "0.24.9"
+jsonwebtoken = "9.3.1"
+libc = "0.2"
+md5 = "0.8.0"
+mime = "0.3.17"
+mockall = "0.12.1"
+move-core-types = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+move-package = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+move-package-alt = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+move-package-alt-compilation = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+mysten-metrics = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+num-bigint = { version = "0.4.5", default-features = false }
+object_store = { version = "0.11.2", features = ["gcp"] }
+once_cell = { version = "1.21.3" }
+opentelemetry = { version = "=0.27", default-features = false, features = ["trace"] }
+opentelemetry-otlp = { version = "=0.27" }
+opentelemetry-proto = { version = "=0.27", default-features = false }
+opentelemetry-semantic-conventions = "=0.31"
+opentelemetry_sdk = "=0.27"
+p256 = { version = "0.13.2", default-features = false }
+pin-project = "1.1.10"
+prettytable = "0.10.0"
+proc-macro2 = "1.0.106"
+prometheus = "0.13.4"
+prost = { version = "0.13", default-features = false }
+quote = "1.0"
+rand = "0.8.5"
+rand_distr = "0.4"
+rayon = "1.11.0"
+rcgen = "0.13.2"
+reed-solomon-simd = "3.1.0"
+regex = "1"
+reqwest = { version = "0.12.12", default-features = false, features = ["http2", "json", "rustls-tls"] }
+rocksdb = "0.22.0"
+rstest = "0.25.0"
+rustls = { version = "0.23.36", default-features = false, features = ["logging", "ring", "tls12"] }
+rustls-native-certs = "0.8.3"
+scoped-futures = "0.1.4"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+serde_test = "1.0.177"
+serde_urlencoded = { version = "0.7.1" }
+serde_with = { version = "3.16", features = ["base64"] }
+serde_yaml = "0.9"
+sha2 = "0.10.9"
+snap = "1.1.0"
+sui-config = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-json-rpc-api = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-keys = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-macros = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-move-build = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-package-alt = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-package-management = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-package-resolver = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-protocol-config = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-rpc = { git = "https://github.com/MystenLabs/sui-rust-sdk.git", rev = "9d9539e620b8b668c1a19528d9700be3f35f269e" }
+sui-rpc-api = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-sdk = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-sdk-types = { git = "https://github.com/MystenLabs/sui-rust-sdk.git", rev = "9d9539e620b8b668c1a19528d9700be3f35f269e", features = [
+  "hash",
+  "serde",
+] }
+sui-simulator = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-storage = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+sui-types = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+syn = "2.0"
+tap = "1.0.1"
+telemetry-subscribers = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+tempfile = "3.24.0"
+test-cluster = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.65.2" }
+thiserror = "2.0.18"
+tokio = { version = "=1.49.0", features = ["macros", "rt-multi-thread", "signal"] }
+tokio-metrics = { version = "0.4.7", default-features = false }
+tokio-stream = "0.1.17"
+tokio-util = "0.7.16"
+tonic = { version = "0.14.2", default-features = false }
+tower = "0.5"
+tower-http = { version = "0.5.2", features = ["cors", "timeout", "trace"] }
+tracing = "0.1.44"
+tracing-opentelemetry = { version = "=0.28.0", default-features = false }
+tracing-subscriber = { version = "0.3.22", default-features = false, features = ["env-filter", "fmt"] }
+twox-hash = "2.1.2"
+typed-store = { path = "crates/typed-store" }
+uint = "0.10.0"
+url = "2.5.4"
+urlencoding = "2.1"
+utoipa = { version = "5" }
+utoipa-redoc = { version = "6.0", features = ["axum"] }
+uuid = { version = "1.20.0", features = ["fast-rng", "macro-diagnostics", "v7"] }
+walrus-core = { path = "crates/walrus-core" }
+walrus-proc-macros = { path = "crates/walrus-proc-macros" }
+walrus-sdk = { path = "crates/walrus-sdk" }
+walrus-service = { path = "crates/walrus-service" }
+walrus-storage-node-client = { path = "crates/walrus-storage-node-client" }
+walrus-stress = { path = "crates/walrus-stress" }
+walrus-sui = { path = "crates/walrus-sui" }
+walrus-test-utils = { path = "crates/walrus-test-utils" }
+walrus-upload-relay = { path = "crates/walrus-upload-relay" }
+walrus-utils = { path = "crates/walrus-utils" }
+x509-cert = "0.2.5"
+
+[workspace.lints.rust]
+future_incompatible = "warn"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+nonstandard_style = "warn"
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(msim)'], priority = 1 }
+unused = "warn"
+
+[workspace.lints.clippy]
+cast_lossless = "warn"
+cast_possible_truncation = "warn"
+cast_possible_wrap = "warn"
+empty_structs_with_brackets = "warn"
+unused_async = "warn"
+unwrap_used = "warn"
+
+[profile.release]
+panic = 'abort'
+
+[profile.dev]
+panic = 'abort'
+
+[profile.test-opt]
+inherits = "test"
+# the small extra compilation time for opt-level 1 is worth it to give >5x speedup for simulator
+# tests and major speedup for other tests.
+opt-level = 1
+
+[profile.simulator]
+debug = true
+debug-assertions = true
+inherits = "test-opt"
+overflow-checks = true
+panic = 'abort'
+
+[profile.release-antithesis]
+debug = 1 # Keep debug symbols
+inherits = "release"
+strip = 'debuginfo' # remove extensive debug info to keep the binary size smaller
