@@ -1,0 +1,12 @@
+[package]
+name = "GLBAsset"
+version = "0.1.0"
+authors = ["Paul Fidika (paul@fidika.com)"]
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework", rev = "devnet" }
+Ownership = { local = "../../../packages/ownership" }
+# SuiMetadata = { local = "../../../packages/metadata" }
+
+[addresses]
+glb_asset = "0x1159c0f222353153c4c75592c73d3dd86806920c"
