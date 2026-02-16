@@ -4,9 +4,11 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~1,280,000 lines of Move code across ~11,700 unique files (duplicates removed)
+**Total**: ~1,310,000 lines of Move code across ~11,800 unique files (duplicates removed)
 
-**Note on Line Count**: While we've cloned repositories totaling over 2M lines of Move code, the Move ecosystem shares substantial framework code across projects. After deduplication, the unique code is approximately 1.28M lines. Reaching 2M unique lines would require finding significantly more original Move application code that doesn't duplicate existing framework code.
+**Note on Line Count**: While we've cloned repositories totaling over 2M lines of Move code before deduplication, the Move ecosystem shares substantial framework code across projects (Sui framework, Move stdlib, etc.). After removing duplicates via MD5 hashing, the unique code is approximately 1.31M lines. This represents the vast majority of publicly available, permissively-licensed Move code. Reaching 2M unique lines would require either:
+- More original application code being written in the Move ecosystem
+- Access to private/restricted repositories that are currently inaccessible
 
 ## License Information
 
