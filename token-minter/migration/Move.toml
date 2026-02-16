@@ -1,0 +1,31 @@
+[package]
+name = "Migration"
+version = "1.0.0"
+authors = []
+upgrade_policy = "compatible"
+
+[addresses]
+migration = "_"
+
+[dev-addresses]
+minter = "0x123"
+
+[dependencies.TokenMinter]
+local = "../token-minter"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dependencies.AptosTokenObjects]
+git = 'https://github.com/aptos-labs/aptos-core.git'
+rev = 'mainnet'
+subdir = 'aptos-move/framework/aptos-token-objects'
+
+[dependencies.AptosToken]
+git = 'https://github.com/aptos-labs/aptos-core.git'
+rev = 'mainnet'
+subdir = 'aptos-move/framework/aptos-token'
+
+[dev-dependencies]
