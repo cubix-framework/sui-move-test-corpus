@@ -4,7 +4,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~2,300,000 lines of Move code across ~18,400 unique files (duplicates removed via MD5 hashing)
+**Total**: ~2,046,000 unique lines of Move code across ~16,180 files (duplicates removed via MD5 hashing)
 
 ## License Information
 
@@ -113,6 +113,27 @@ All Move code in this corpus comes with clear, permissive open-source licenses:
 | **daily-move-extra** | 80+ | 5,833 | Apache 2.0 | Yes |
 | **animeswap** | 10+ | 3,682 | GPL v3 | Yes |
 | **bucket-periphery** | 5+ | 383 | MIT | Yes |
+| **movemnt-aptos** (Movement Labs) | 3,000+ | 278,000 | Apache 2.0 | Yes |
+| **starcoin-framework** | 200+ | 64,000 | Apache 2.0 | Yes |
+| **starcoin-commons-extra** | 100+ | 16,000 | Apache 2.0 | Yes |
+| **aptos-analyzer** | 2,200+ | 46,000 | GPL v3 | Yes |
+| **aptos-move-lang** | 1,200+ | 72,000 | Apache 2.0 | Yes |
+| **starswap-core** | 30+ | 19,000 | Apache 2.0 | Yes |
+| **movedid** | 20+ | 6,000 | MIT | Yes |
+| **circle-stablecoin** | 20+ | 7,500 | Apache 2.0 (headers) | Yes (in source) |
+| **omni-amm** (OmniBTC) | 10+ | 1,800 | Apache 2.0 | Yes |
+| **omni-sui-swap** (OmniBTC) | 10+ | 2,000 | Apache 2.0 | Yes |
+| **omnibridge** (OmniBTC) | 5+ | 1,000 | Apache 2.0 | Yes |
+| **suia** | 5+ | 544 | Apache 2.0 | Yes |
+| **aptos-redpacket** | 5+ | 1,600 | Apache 2.0 | Yes |
+| **sui-redpacket** | 5+ | 547 | Apache 2.0 | Yes |
+| **intellij-move** | 30+ | 2,100 | MIT | Yes |
+| **create-aptos-extra** | 20+ | 7,100 | Apache 2.0 | Yes |
+| **deepbookv3** (MystenLabs) | 67 | 54,796 | Apache 2.0 | Yes |
+| **suins-contracts** (MystenLabs) | 90 | 17,218 | Apache 2.0 | Yes |
+| **iota-full-extra** (IOTA) | 3,800+ | 207,322 | Apache 2.0 | Yes |
+| **sui-full-extra** (MystenLabs) | 4,000+ | 210,146 | Apache 2.0 | Yes |
+| **mysten-apps** (MystenLabs) | 46 | 8,021 | Apache 2.0 | Yes |
 
 ### License Summary
 
