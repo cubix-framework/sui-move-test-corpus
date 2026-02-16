@@ -174,3 +174,13 @@ This corpus is used for:
 ## Coverage
 
 See `node-pairs-coverage.txt` for the grammar coverage report.
+
+### Why Node-Pair Coverage?
+
+In the 2000s, the U.S. B-2 stealth bomber program seemed doomed. Its flight software was written in JOVIAL, an old programming language, and would not run on modern hardware. To avert the loss of the B-2 fleet, Northrop Grumman tried to manually port the JOVIAL code to C and failed. They then tried to build an automated converter and also failed. In desperation, they turned to Semantic Designs.
+
+In one to two man-years, Semantic Designs built a JOVIAL-to-C converter that translated the entire 1.5 million lines of flight software perfectly on the first try. They were never allowed to see the actual source code.
+
+How? Because they wrote unit tests for every single *pair* of grammar nodes. By the power of composition, if a translator works correctly for all pairs of nodes, it is very likely to work correctly for all programs. A node pair like (if_statement, function_call) tests that function calls work inside if-statements; (binary_expression, let_binding) tests that binary expressions work inside let bindings; and so on. Covering all such pairs provides combinatorial assurance that the tool handles the interactions between language constructs, not just each construct in isolation.
+
+This is why we use node-pair coverage as *the* metric for evaluating this test corpus. The goal is not merely to have a lot of code, but to ensure that every combination of grammar constructs that appears in real Move programs is represented, so that tools built on this corpus are tested against the full compositional structure of the language.
