@@ -1,0 +1,35 @@
+[package]
+name = "did"
+version = "1.0.0"
+# https://aptos.dev/guides/move-guides/upgrading-move-code/
+upgrade_policy = "compatible"
+
+[addresses]
+my_addr = "_"
+std = "0x1"
+aptos_framework = "0x1"
+# chain_id = "0x1" # for mainnet
+# chain_id = "0x2" # for testnet
+chain_id = "0x7e" # for movement mainnet, 126 = 7e
+
+
+[dependencies.AptosFramework]
+git = "https://github.com/movementlabsxyz/aptos-core.git"
+rev = "movement"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dependencies.MoveStdlib]
+git = "https://github.com/movementlabsxyz/aptos-core.git"
+rev = "movement"
+subdir = "aptos-move/framework/move-stdlib"
+
+[dependencies.AptosTokenObjects]
+git = "https://github.com/movementlabsxyz/aptos-core.git"
+rev = "movement"
+subdir = "aptos-move/framework/aptos-token-objects"
+
+# [dependencies]
+# MoveStdlib = { git = "https://github.com/aptos-labs/aptos-core.git", subdir="aptos-move/framework/move-stdlib/"}
+# AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir="aptos-move/framework/aptos-framework/" }
+# MoveStdlib = { local = "~/aptos-core/aptos-move/framework/move-stdlib" }
+# AptosFramework = { local = "~/aptos-core/aptos-move/framework/aptos-framework" }
