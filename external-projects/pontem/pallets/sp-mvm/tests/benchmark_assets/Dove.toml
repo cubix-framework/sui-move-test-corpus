@@ -1,0 +1,8 @@
+[package]
+name = "benchmark_assets"
+dialect = "pont"
+dove_version = ">=1.5.5"
+
+dependencies = [
+    { git = "https://github.com/pontem-network/pont-stdlib.git", rev = "e9bd26720c06705d2e222833a496fda7c67c8e32" }
+]
