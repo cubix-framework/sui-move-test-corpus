@@ -1,0 +1,1 @@
+module typus_dov::tds_authorized_entry {}

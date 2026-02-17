@@ -1,0 +1,1 @@
+module typus_framework::i64 {}

@@ -1,0 +1,1 @@
+module kiosk::royalty_rule {}

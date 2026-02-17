@@ -1,0 +1,16 @@
+[package]
+name = "haedal"
+version = "1.0.0"
+published-at = "0x19e6ea7f5ced4f090e20da794cc80349a03e638940ddb95155a4e301f5f4967c"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.48.2" }
+
+[dependencies.SuiSystem]
+git = "https://github.com/MystenLabs/sui.git"
+subdir = "crates/sui-framework/packages/sui-system"
+rev = "mainnet-v1.48.2"
+
+[addresses]
+haedal = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d"
+sui =  "0000000000000000000000000000000000000000000000000000000000000002"

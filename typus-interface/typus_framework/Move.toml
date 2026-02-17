@@ -1,0 +1,12 @@
+[package]
+name = "typus_framework"
+edition = "2024.beta"
+published-at = "0xf71c0c20d3155b1770821b3a0dd6ef0d936de7750904cb17a29ed625305f9f0b"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet" }
+spool = { local = "../scallop/spool-contract-interface/spool" }
+ScallopProtocol = { local = "../scallop/sui-lending-protocol/protocol" }
+
+[addresses]
+typus_framework = "0xb4f25230ba74837d8299e92951306100c4a532e8c48cc3d8828abe9b91c8b274"

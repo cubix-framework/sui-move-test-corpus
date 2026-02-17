@@ -1,0 +1,43 @@
+[package]
+name = "nBTC"
+
+# TODO: should be 2024.beta, we use alpha for "extend" feature in test
+edition = "2024.alpha"
+license = "MPL-2.0"
+authors = ["Native"]
+
+[dependencies]
+bitcoin_spv = {local = "../bitcoin_spv"}
+bitcoin_lib = {local = "../bitcoin_lib"}
+# TODO: switch to mainnet
+ika_common = {git = "https://github.com/dwallet-labs/ika.git", subdir = "deployed_contracts/testnet/ika_common", rev = "main"}
+ika_dwallet_2pc_mpc = {git = "https://github.com/dwallet-labs/ika.git", subdir = "deployed_contracts/testnet/ika_dwallet_2pc_mpc", rev = "main"}
+ika = {git = "https://github.com/dwallet-labs/ika.git", subdir = "deployed_contracts/testnet/ika", rev = "main"}
+
+# For remote import, use the `{ git = "...", subdir = "...", rev = "..." }`.
+# Revision can be a branch, a tag, and a commit hash.
+# MyRemotePackage = { git = "https://some.remote/host.git", subdir = "remote/path", rev = "main" }
+
+# For local dependencies use `local = path`. Path is relative to the package root
+# Local = { local = "../path/to" }
+
+# To resolve a version conflict and force a specific version for dependency
+# override use `override = true`
+# Override = { local = "../conflicting/version", override = true }
+
+[addresses]
+nbtc = "0x0"
+# TODO: need to set these addresses for mainnet
+bitcoin_lc = "0xbcb9001aa02b8d7b3178d7cf49eccfafcfe5398cc63494c84102be2e4b2be31e"
+fallback_addr = "0x529216e27401313e3513102f5706bafa9c5b44831867352ab111456dc1c5c4a7"
+ika_coordinator = "0x4d157b7415a298c56ec2cb1dcab449525fa74aec17ddba376a83a7600f2062fc"
+
+[dev-dependencies]
+# The dev-dependencies section allows overriding dependencies for `--test` and
+# `--dev` modes. You can introduce test-only dependencies here.
+# Local = { local = "../path/to/dev-build" }
+
+[dev-addresses]
+# The dev-addresses section allows overwriting named addresses for the `--test`
+# and `--dev` modes.
+# alice = "0xB0B"

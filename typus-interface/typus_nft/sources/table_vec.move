@@ -1,0 +1,1 @@
+module typus_nft::table_vec {}

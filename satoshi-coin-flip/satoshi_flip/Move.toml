@@ -1,0 +1,7 @@
+[package]
+name = "satoshi_flip"
+version = "0.0.1"
+edition = "2024.beta"
+
+[addresses]
+satoshi_flip = "0x0"

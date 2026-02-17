@@ -1,0 +1,10 @@
+[package]
+name = "typus_interface"
+edition = "2024.beta"
+published-at = "0x0"
+
+[dependencies]
+typus_dov = { local = "../typus_dov_single" }
+
+[addresses]
+typus_interface = "0x0"

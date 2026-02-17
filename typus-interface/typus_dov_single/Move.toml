@@ -1,0 +1,20 @@
+[package]
+name = "typus_dov"
+edition = "2024.beta"
+published-at = "0xd0468b55d762e51b07ea105695a9fc278f09859f6362c9cd824fe9b9c0fb54f7"
+
+[dependencies.Sui]
+git = "https://github.com/MystenLabs/sui.git"
+subdir = "crates/sui-framework/packages/sui-framework"
+rev = "mainnet"
+
+[dependencies]
+typus_oracle = { git = "https://github.com/Typus-Lab/typus-oracle.git", subdir = "oracle", rev = "mainnet" }
+typus_nft = { local = "../typus_nft" }
+typus = { local = "../typus" }
+typus_framework = { local = "../typus_framework" }
+spool = { local = "../scallop/spool-contract-interface/spool" }
+ScallopProtocol = { local = "../scallop/sui-lending-protocol/protocol" }
+
+[addresses]
+typus_dov = "0x321848bf1ae327a9e022ccb3701940191e02fa193ab160d9c0e49cd3c003de3a"

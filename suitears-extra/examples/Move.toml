@@ -1,0 +1,14 @@
+[package]
+name = "examples"
+version = "0.0.1"
+edition = "2024.beta"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "framework/testnet" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+SuiTears = { local = "../contracts" }
+
+[addresses]
+examples = "0x0"
+std = "0x1"
+sui = "0x2"

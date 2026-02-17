@@ -1,0 +1,1 @@
+module typus_dov::tds_fee_pool_entry {}

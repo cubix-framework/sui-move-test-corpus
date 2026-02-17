@@ -6,7 +6,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~1,205,000 unique lines of Sui Move code across ~9,473 files (duplicates removed via MD5 hashing)
+**Total**: ~1,400,000 unique lines of Sui Move code across ~10,566 files (duplicates removed via MD5 hashing)
 
 ## License Information
 
@@ -96,16 +96,57 @@ All code in this corpus comes with clear, permissive open-source licenses:
 | **suidouble-bot-score** | 1 | 158 | Apache 2.0 |
 | **suidouble-sample-color** | 1 | 150 | Apache 2.0 |
 | **pysui** | 1 | 113 | Apache 2.0 |
+| **typus** (Typus Labs) | 124 | 61,493 | Apache 2.0 |
+| **okx-dex-router** (OKX Labs) | 232 | 18,363 | MIT |
+| **bucket-oracle** (Bucket Protocol) | 122 | 18,341 | MIT |
+| **account-framework** (Account.tech) | 57 | 17,336 | Apache 2.0 |
+| **bucket-v1-core** (Bucket Protocol) | 58 | 14,888 | MIT |
+| **sui-native** (GoNative) | 62 | 12,692 | MPL 2.0 |
+| **account-registry** (Account.tech) | 31 | 9,635 | Apache 2.0 |
+| **dubhe-framework** (0xobelisk) | 55 | 4,785 | Apache 2.0 |
+| **liquid-staking** (Suilend) | 13 | 4,394 | MIT |
+| **typus-interface** (Typus Labs) | 79 | 4,245 | MIT |
+| **move-book** (MystenLabs) | 78 | 3,394 | Apache 2.0 |
+| **onenet-bushi** (MystenLabs) | 9 | 3,296 | Apache 2.0 |
+| **sui-nft-market-xander** | 22 | 2,740 | Apache 2.0 |
+| **buckyou-contracts** (Bucket Protocol) | 20 | 2,704 | MIT |
+| **satoshi-coin-flip** (MystenLabs) | 7 | 2,467 | Apache 2.0 |
+| **world3-ai** (WORLD3) | 4 | 2,317 | Apache 2.0 |
+| **prime-machin-contracts** (Studio Mirai) | 10 | 2,300 | MIT |
+| **asset-tokenization** (MystenLabs) | 6 | 1,749 | Apache 2.0 |
+| **bucket-framework** (Bucket Protocol) | 9 | 1,626 | MIT |
+| **sui-mover-2024** (Bucket Protocol) | 14 | 1,376 | MIT |
+| **suitears-extra** (Interest Protocol) | 11 | 1,224 | MIT |
+| **sui-meta** (suidouble) | 8 | 1,096 | Apache 2.0 |
+| **typus-framework** (Typus Labs) | 5 | 940 | Apache 2.0 |
+| **encode-sui-educate** (Sui Foundation) | 12 | 926 | CC BY-SA 4.0 |
+| **sui-intro-zh** (RandyPen) | 15 | 919 | CC BY-SA 4.0 |
+| **sui-dev-token** (Typus Labs) | 22 | 917 | Apache 2.0 |
+| **pyth-crosschain-extra** (Pyth, Sui only) | 3 | 821 | Apache 2.0 |
+| **controlled-treasury** (MystenLabs) | 3 | 733 | Apache 2.0 |
+| **sui-nft-auction** | 3 | 725 | MIT |
+| **object-market** (coming-chat) | 3 | 679 | Apache 2.0 |
+| **nautilus** (MystenLabs) | 5 | 669 | Apache 2.0 |
+| **sui-pumpfun** | 4 | 504 | MIT |
+| **turbos-oracle** (Turbos Finance) | 5 | 503 | MIT |
+| **sui-fantasy** (MystenLabs) | 2 | 420 | MIT |
+| **sui-native-randomness** (MystenLabs) | 4 | 219 | Apache 2.0 |
+| **multisig-move** (MystenLabs) | 2 | 198 | Apache 2.0 |
+| **buck-voucher** (Bucket Protocol) | 1 | 135 | MIT |
+| **navi-demo** (NAVI Protocol) | 1 | 81 | MIT |
+| **encryption-public-key** (MystenLabs) | 2 | 58 | Apache 2.0 |
+| **typus-coin** (Typus Labs) | 1 | 35 | MIT |
 
 ### License Summary
 
 | License | Projects | Approximate Lines |
 |---------|----------|-------------------|
-| **Apache 2.0** | ~55 | ~1,050,000 |
-| **MIT** | ~12 | ~100,000 |
+| **Apache 2.0** | ~65 | ~1,100,000 |
+| **MIT** | ~25 | ~200,000 |
 | **Viral Public License** | 1 | ~44,000 |
 | **GPL v3** | 3 | ~61,000 |
-| **CC BY-SA 4.0** | 1 | ~1,500 |
+| **CC BY-SA 4.0** | 3 | ~3,300 |
+| **MPL 2.0** | 1 | ~12,700 |
 
 ### Removed Projects
 

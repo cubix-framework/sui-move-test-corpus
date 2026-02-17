@@ -1,0 +1,16 @@
+[package]
+name = "account_actions"
+edition = "2024"
+license = "Apache-2.0"
+authors = [ "Thouny (thouny@tuta.io)" ]
+
+[dependencies.kiosk]
+git = "https://github.com/thounyy/apps.git"
+subdir = "kiosk"
+rev = "testnet"
+
+[dependencies.account_protocol]
+local = "../protocol"
+
+[dependencies.account_extensions]
+local = "../extensions"

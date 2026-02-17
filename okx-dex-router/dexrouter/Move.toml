@@ -1,0 +1,24 @@
+[package]
+name = "dexrouter"
+version = "1.1.5"
+published-at = "0x0705aa6aad0a6195d1da7f1b1b057d58684040459c375db056059b1747d5d1f0"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.48.2" }
+CetusClmm = { git = "https://github.com/CetusProtocol/cetus-clmm-interface.git", subdir = "sui/cetus_clmm", rev = "mainnet-v1.49.0" }
+suiswap = { local = "../interfaces/suiswap" }
+TurbosCLMM = { local = "../interfaces/turbos" }
+BlueMove = { local = "../interfaces/bluemove" }
+MovePump = { local = "../interfaces/movepump" }
+AftermathAmm = { local = "../interfaces/aftermath/amm" }
+KriyaAmm = { local = "../interfaces/kriya/amm" }
+KriyaClmm = { local = "../interfaces/kriya/clmm" }
+deeptoken = { local = "../interfaces/deeptoken" }
+deepbook = { local = "../interfaces/deepbookV3" }
+flowxv2 = { local = "../interfaces/flowx/v2" }
+flowx_clmm = { local = "../interfaces/flowxv3" }
+AftermathLSD = { local = "../interfaces/afsui/afsui-staked-sui-vault" }
+
+[addresses]
+dexrouter = "0x0"
+sui = "0000000000000000000000000000000000000000000000000000000000000002"

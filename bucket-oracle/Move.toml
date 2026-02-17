@@ -1,0 +1,13 @@
+[package]
+name = "BucketOracle"
+version = "0.0.2"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+SwitchboardStdLib = { local = "./partners/switchboard" }
+Pyth = { local = "./partners/pyth" }
+SupraOracle = { local = "./partners/supra" }
+
+[addresses]
+bucket_oracle = "0x0"
+sui =  "0000000000000000000000000000000000000000000000000000000000000002"

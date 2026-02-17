@@ -1,0 +1,14 @@
+[package]
+name = "p2p_ramp"
+edition = "2024"
+license = "Apache 2.0"
+authors = ["Aaron (aaron@mcxross.xyz)", "Thouny (thouny@tuta.io)"]
+
+[dependencies]
+account_extensions = { git = "https://github.com/account-tech/move-framework.git", subdir = "packages/extensions", rev="main" }
+account_protocol = { git = "https://github.com/account-tech/move-framework.git", subdir = "packages/protocol", rev="main" }
+
+# OrderRegistry = "0xbfb1078fdba247c6b8a6a6f64b6559f2673fbac98ead92938cee02867dd1d653"
+# AccountRegistry = "0x01327a5e0ae0617d09d3151a2d4db4112f0b910221d457e8747253de32e70b17"
+# Policy = "0x9afa420bb740836997cc5fe3cea02a1726d4d67f9ca7a0da3ac793aaec8a9cdd"
+# AdminCap = "0x3e392c06d70bc98e0e815ba50a5a9f1b33b8417161c3f22bf4c4c7b5b81c75d4"

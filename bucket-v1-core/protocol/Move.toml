@@ -1,0 +1,11 @@
+[package]
+name = "BucketProtocol"
+edition = "legacy"
+
+[dependencies]
+BucketOracle = { git = "https://github.com/Bucket-Protocol/oracle.git", rev = "test-only" }
+BucketFramework = { local = "../framework" }
+Flask = { local = "../flask" }
+
+[addresses]
+bucket_protocol = "0x0"

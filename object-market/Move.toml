@@ -1,0 +1,13 @@
+[package]
+name = "marketplace"
+version = "0.0.1"
+
+[dependencies]
+#Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "testnet" }
+
+Sui = { local = "../sui/crates/sui-framework/packages/sui-framework" }
+
+[addresses]
+marketplace =  "0x0"
+# TODO: replace on mainnet
+beneficiary = "0xe76e8792889a2c3d6f7cf3b8b21be9c9f162ae98e1f218f23ac6d09e70931a2d"

@@ -1,0 +1,15 @@
+[package]
+name = "typus_nft"
+published-at = "0x153ead7b2ccad1483458d41f0daffa35965d89960d1024a4883ba52fb18332b3"
+
+[dependencies.Sui]
+git = "https://github.com/MystenLabs/sui.git"
+subdir = "crates/sui-framework/packages/sui-framework"
+rev = "mainnet"
+
+[dependencies]
+Kiosk = { local = "../kiosk" }
+
+
+[addresses]
+typus_nft = "0xbd147bc7f12f38f175d78947a61364e8e077b9b188b00e7094bc0c3623162196"

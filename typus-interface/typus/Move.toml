@@ -1,0 +1,16 @@
+[package]
+name = "typus"
+edition = "2024.beta"
+published-at = "0x017117e8e181c236a3d1706f8a60486676cc9a5c82dc58d132a2f8270598271d"
+
+[dependencies.Sui]
+git = "https://github.com/MystenLabs/sui.git"
+subdir = "crates/sui-framework/packages/sui-framework"
+rev = "mainnet"
+
+[dependencies]
+typus_nft = { local = "../typus_nft" }
+
+
+[addresses]
+typus = "0x017117e8e181c236a3d1706f8a60486676cc9a5c82dc58d132a2f8270598271d"
