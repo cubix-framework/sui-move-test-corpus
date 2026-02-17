@@ -6,7 +6,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~1,400,000 unique lines of Sui Move code across ~10,566 files (duplicates removed via MD5 hashing)
+**Total**: ~1,480,000 unique lines of Sui Move code across ~10,832 files (duplicates removed via MD5 hashing)
 
 ## License Information
 
@@ -116,7 +116,7 @@ All code in this corpus comes with clear, permissive open-source licenses:
 | **asset-tokenization** (MystenLabs) | 6 | 1,749 | Apache 2.0 |
 | **bucket-framework** (Bucket Protocol) | 9 | 1,626 | MIT |
 | **sui-mover-2024** (Bucket Protocol) | 14 | 1,376 | MIT |
-| **suitears-extra** (Interest Protocol) | 11 | 1,224 | MIT |
+| **suitears** (Interest Protocol) | 11 | 1,224 | MIT |
 | **sui-meta** (suidouble) | 8 | 1,096 | Apache 2.0 |
 | **typus-framework** (Typus Labs) | 5 | 940 | Apache 2.0 |
 | **encode-sui-educate** (Sui Foundation) | 12 | 926 | CC BY-SA 4.0 |
@@ -135,18 +135,28 @@ All code in this corpus comes with clear, permissive open-source licenses:
 | **buck-voucher** (Bucket Protocol) | 1 | 135 | MIT |
 | **navi-demo** (NAVI Protocol) | 1 | 81 | MIT |
 | **encryption-public-key** (MystenLabs) | 2 | 58 | Apache 2.0 |
+| **deeptrade-core** (DeeptradeProtocol) | 89 | 33,829 | MIT |
+| **ramm-sui** (Aldrin Labs) | 23 | 14,265 | AGPL 3.0 |
+| **aftermath-interfaces** (AftermathFinance) | 76 | 10,783 | Apache 2.0 |
+| **suede** (4meta5) | 48 | 7,957 | MIT |
+| **sui-extended-std** (arniebarnie) | 20 | 6,498 | MIT |
+| **integer-mate** (CetusProtocol) | 16 | 4,185 | MIT |
+| **goosebumps** (goosebumps-farm) | 14 | 4,075 | MIT |
+| **sui-bitcoin-spv** (GoNative) | 31 | 3,521 | MPL 2.0 |
+| **dmens** (coming-chat) | 3 | 1,546 | Apache 2.0 |
 | **typus-coin** (Typus Labs) | 1 | 35 | MIT |
 
 ### License Summary
 
 | License | Projects | Approximate Lines |
 |---------|----------|-------------------|
-| **Apache 2.0** | ~65 | ~1,100,000 |
-| **MIT** | ~25 | ~200,000 |
+| **Apache 2.0** | ~67 | ~1,110,000 |
+| **MIT** | ~32 | ~270,000 |
 | **Viral Public License** | 1 | ~44,000 |
 | **GPL v3** | 3 | ~61,000 |
+| **AGPL 3.0** | 1 | ~14,000 |
 | **CC BY-SA 4.0** | 3 | ~3,300 |
-| **MPL 2.0** | 1 | ~12,700 |
+| **MPL 2.0** | 2 | ~16,200 |
 
 ### Removed Projects
 
@@ -179,14 +189,16 @@ This corpus is used for:
 
 ## Coverage
 
-See `node-pairs-coverage.txt` for the grammar coverage report.
+See `node-pairs-coverage.txt` for the full grammar coverage report.
+
+**Summary**: 1,018 of 1,716 node pairs covered (59.3%), with 1,105,094 total node-pair occurrences across the corpus.
 
 ### Why Node-Pair Coverage?
 
 In the 2000s, the U.S. B-2 stealth bomber program seemed doomed. Its flight software was written in JOVIAL, an old programming language, and would not run on modern hardware. To avert the loss of the B-2 fleet, Northrop Grumman tried to manually port the JOVIAL code to C and failed. They then tried to build an automated converter and also failed. In desperation, they turned to Semantic Designs.
 
-In one to two man-years, Semantic Designs built a JOVIAL-to-C converter that translated the entire 1.5 million lines of flight software perfectly on the first try. They were never allowed to see the actual source code.
+In about 1.5 man-years, Semantic Designs built a JOVIAL-to-C converter that translated the entire 1.5 million lines of flight software perfectly on the first try. They were never allowed to see the actual source code.
 
-How? Because they wrote unit tests for every single *pair* of grammar nodes. By the power of composition, if a translator works correctly for all pairs of nodes, it is very likely to work correctly for all programs. A node pair like (if_statement, function_call) tests that function calls work inside if-statements; (binary_expression, let_binding) tests that binary expressions work inside let bindings; and so on. Covering all such pairs provides combinatorial assurance that the tool handles the interactions between language constructs, not just each construct in isolation.
+How? Because they wrote unit tests for every single *pair* of grammar nodes. By the power of composition, if a translator works correctly for all pairs of nodes, it is very likely to work correctly for all programs. A node pair like (if_statement, function_call) tests that it correctly handles an if-statements whose body or condition is a function call; (binary_expression, let_expression) tests that it correctly handles a binary expression whose operand is a let expression; and so on. Covering all such pairs provides combinatorial assurance that the tool handles the interactions between language constructs, not just each construct in isolation.
 
 This is why we use node-pair coverage as *the* metric for evaluating this test corpus. The goal is not merely to have a lot of code, but to ensure that every combination of grammar constructs that appears in real Move programs is represented, so that tools built on this corpus are tested against the full compositional structure of the language.

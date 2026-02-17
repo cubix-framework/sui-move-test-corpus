@@ -1,0 +1,24 @@
+[package]
+name = "ramm_sui"
+version = "0.0.1"
+edition = "2024.beta"
+# First version of package published in testnet with ID:
+#published-at = "0xd3283fa556731370cd2a7f389b3e35c630184118b5af416ce9e57edfce751496"
+# Upgraded to ID:
+#published-at = "0xb93c139768a9dfdb6898475052be3ac1d93b92dccf2288c96a8e227f3e511ef6"
+
+# First version of package published in mainnet with ID:
+published-at = "0x5b05e2c12f617b33b64ea2b004d89cc18c46b270bc0c214ddd32654fa9a8c84c"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet" }
+SwitchboardStdLib = { git = "https://github.com/switchboard-xyz/sbv2-sui.git", subdir = "move/mainnet/switchboard_std/", rev = "main" }
+
+[addresses]
+ramm_sui = "0x0"
+std = "0x1"
+sui =  "0x2"
+# mainnet
+switchboard_std = "0x08d79f4d920b03d88faca1e421af023a87fbb1e4a6fd200248e6e9998d09e470"
+# testnet
+#switchboard = "0x98670585b87e06628ef2d7f7cb1e7bee8ada65b43b82997935225a7e6e21d18e"
