@@ -1,0 +1,10 @@
+[package]
+name = "CurrencyTreasury"
+edition = "2024.beta"
+license = "MIT"
+authors = ["Studio Mirai, LLC (build@sm.xyz)"]
+
+[dependencies]
+
+[addresses]
+currency_treasury = "0x0"

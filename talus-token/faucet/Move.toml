@@ -1,0 +1,7 @@
+[package]
+name = "Faucet"
+edition = "2024.beta" 
+authors = ["Talus Labs <hi@taluslabs.xyz>"]
+
+[addresses]
+faucet = "0x0"

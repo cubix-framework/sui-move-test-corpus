@@ -6,7 +6,7 @@ A collection of Sui Move programs for testing the Cubix framework's Sui Move lan
 
 ## Statistics
 
-**Total**: ~1,480,000 unique lines of Sui Move code across ~10,832 files (duplicates removed via MD5 hashing)
+**Total**: ~1,482,000 unique lines of Sui Move code across ~10,796 files (duplicates removed via MD5 hashing)
 
 ## License Information
 
@@ -145,15 +145,20 @@ All code in this corpus comes with clear, permissive open-source licenses:
 | **sui-bitcoin-spv** (GoNative) | 31 | 3,521 | MPL 2.0 |
 | **dmens** (coming-chat) | 3 | 1,546 | Apache 2.0 |
 | **typus-coin** (Typus Labs) | 1 | 35 | MIT |
+| **capy-fighter** (sui-potatoes) | 26 | 4,160 | MIT |
+| **constantinople** (0xobelisk) | 35 | 2,124 | GPL v3 |
+| **suiloyal** (SuiLoyal) | 5 | 1,742 | MIT |
+| **sui-battle-game** | 5 | 884 | Apache 2.0 |
+| **sbv2-sui** (Switchboard) | 2 | 734 | MIT |
 
 ### License Summary
 
 | License | Projects | Approximate Lines |
 |---------|----------|-------------------|
-| **Apache 2.0** | ~67 | ~1,110,000 |
-| **MIT** | ~32 | ~270,000 |
+| **Apache 2.0** | ~68 | ~1,111,000 |
+| **MIT** | ~36 | ~278,000 |
 | **Viral Public License** | 1 | ~44,000 |
-| **GPL v3** | 3 | ~61,000 |
+| **GPL v3** | 4 | ~63,000 |
 | **AGPL 3.0** | 1 | ~14,000 |
 | **CC BY-SA 4.0** | 3 | ~3,300 |
 | **MPL 2.0** | 2 | ~16,200 |

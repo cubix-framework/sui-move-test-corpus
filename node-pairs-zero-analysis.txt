@@ -1,0 +1,2257 @@
+=== BATCH 01 ===
+PAIR: AbortExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `abort x = 5`
+The abort_expression takes _expression as its child, and assign_expression is an _expression. In `abort x = 5`, since assign_expression's lhs must be _unary_expression and abort_expression is NOT _unary_expression, the only valid parse is abort(assign(x, 5)). The assign_expression (prec 1) is consumed as the child of abort.
+
+PAIR: AbortExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `abort |x, y| x`
+The abort_expression takes _expression, and lambda_expression is an _expression. Using `abort |x| x` would be ambiguous with the bitor operator `|`, but `abort |x, y| x` is unambiguous because the comma inside `|...|` forces lambda_bindings parsing, not bitor.
+
+PAIR: AbortExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `abort loop { break }`
+The abort_expression takes _expression, and loop_expression is an _expression. `abort loop { break }` parses as abort with a loop_expression child. The `loop` keyword is not an expression_term so it is unambiguously consumed by abort.
+
+PAIR: AbortExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `abort match (x) { _ => 0 }`
+The abort_expression takes _expression, and match_expression is an _expression (also _expression_term). `abort match (x) { _ => 0 }` parses as abort with a match_expression child.
+
+PAIR: AbortExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec fun f(): bool { abort forall x: u64: x > 0 }`
+The abort_expression takes _expression, and quantifier_expression is an _expression. Although quantifier expressions are typically used in spec contexts, the grammar does not syntactically restrict them from being abort's child. Example: `abort forall x: u64: x > 0`.
+
+PAIR: AbortExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `abort return 5`
+The abort_expression takes _expression, and return_expression is an _expression. `abort return 5` parses as abort(return(5)). While semantically nonsensical (abort of a return), the grammar allows it since both abort and return consume _expression children.
+
+PAIR: AbortExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `abort vector[1, 2]`
+The abort_expression takes _expression, and vector_expression is an _expression (also _expression_term). `abort vector[1, 2]` parses as abort with a vector_expression child.
+
+PAIR: AbortExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `abort while (true) { break }`
+The abort_expression takes _expression, and while_expression is an _expression. `abort while (true) { break }` parses as abort with a while_expression child.
+
+PAIR: AnnotationExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `(abort 5 : u64)`
+The annotation_expression is `( _expression : _type )`. The abort_expression `abort 5` is a valid _expression. Since `:` is not an expression operator, `abort 5` terminates before `:`, and `: u64)` completes the annotation.
+
+PAIR: AnnotationExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `(x = 5 : u64)`
+The annotation_expression is `( _expression : _type )`. The assign_expression `x = 5` is a valid _expression (prec 1). The rhs of assign consumes `5` and stops at `:` (not an expression operator), then `: u64)` completes the annotation.
+
+PAIR: AnnotationExpression -> HiddenExpressionCastExpression
+EXAMPLE: `(x as u64 : u64)`
+The annotation_expression is `( _expression : _type )`. The cast_expression `x as u64` is a valid _expression (prec.left 16). After parsing the cast, `:` is the annotation separator and `u64)` completes the annotation.
+
+PAIR: AnnotationExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `(match (x) { _ => 0 } : u64)`
+The annotation_expression is `( _expression : _type )`. The match_expression is a valid _expression. After the closing `}` of match, `: u64)` completes the annotation.
+
+PAIR: AnnotationExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `(forall x: u64: x > 0 : bool)`
+The annotation_expression is `( _expression : _type )`. The quantifier_expression `forall x: u64: x > 0` uses prec.right, binding `x: u64` in the quantifier_binding, then `:` separates the body `x > 0`. The final `: bool)` completes the annotation. The quantifier's prec.right ensures it consumes `x > 0` and stops before the annotation's `:`.
+
+PAIR: AnnotationExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `(vector[1, 2] : vector<u64>)`
+The annotation_expression is `( _expression : _type )`. The vector_expression `vector[1, 2]` is a valid _expression. After the closing `]`, `: vector<u64>)` completes the annotation.
+
+PAIR: AnnotationExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `(while (true) { break } : u64)`
+The annotation_expression is `( _expression : _type )`. The while_expression `while (true) { break }` is a valid _expression. After the closing `}` of the while body, `: u64)` completes the annotation.
+
+PAIR: ApplyType -> ModuleAccess2
+EXAMPLE: `let x: @owner = @0x1;`
+The apply_type rule uses module_access, and ModuleAccess2 is the `@identifier` variant of module_access. The grammar does not restrict which module_access variants can appear in apply_type. While `@identifier` is semantically an address access rather than a type name, the grammar permits it syntactically as a type.
+
+PAIR: ApplyType -> ModuleAccess5
+EXAMPLE: `let x: MyModule::MyType = 0;`
+The apply_type rule uses module_access, and ModuleAccess5 is the `module_id<type_args>?::member` variant. This represents a qualified name using a module identifier (not a full module_identity with address). Example: `MyModule::MyType` as a type. This is grammatically valid.
+
+PAIR: ApplyType -> ModuleAccess8
+EXAMPLE: `let x: 0x1::vector::Vector = vector[];`
+The apply_type rule uses module_access, and ModuleAccess8 is the `address::module<type_args>?::member` variant with optional type args. This is the standard fully-qualified type form. Example: `0x1::vector::Vector` (without type args). Grammatically valid and commonly used (with type args it would be even more common, but the variant itself is valid without them too).
+
+PAIR: ApplyType -> ModuleAccess9
+EXAMPLE: `let x: 0x1::option::Option::Some = 0;`
+The apply_type rule uses module_access, and ModuleAccess9 is the enum variant access `address::module::enum_name<type_args>?::variant`. While enum variants are not typically used as types, the grammar does not restrict which module_access variants appear in apply_type. Syntactically valid.
+
+PAIR: ApplyType -> ModuleAccessMember
+EXAMPLE: `let x: spec = 0;`
+The apply_type rule uses module_access, and ModuleAccessMember is the reserved identifier variant (forall, exists, spec). While these reserved words are not typical type names, the grammar's module_access rule includes them, and apply_type accepts any module_access. In a type context, `spec`, `forall`, or `exists` would be parsed as module_access with a reserved identifier member. Syntactically valid, though semantically meaningless.
+
+PAIR: ArgList -> HiddenExpressionAssignExpression
+EXAMPLE: `f(x = 5)`
+The arg_list rule takes _expression, and assign_expression is an _expression. Inside the parentheses of arg_list, `x = 5` parses as assign_expression (prec.left 1). The `)` or `,` terminates the expression.
+
+PAIR: ArgList -> HiddenExpressionMatchExpression
+EXAMPLE: `f(match (x) { _ => 0 })`
+The arg_list rule takes _expression, and match_expression is an _expression. Inside the parentheses, `match (x) { _ => 0 }` parses as a complete match expression.
+
+PAIR: ArgList -> HiddenExpressionQuantifierExpression
+EXAMPLE: `f(forall x: u64: x > 0)`
+The arg_list rule takes _expression, and quantifier_expression is an _expression. Inside parentheses, `forall x: u64: x > 0` parses as a quantifier expression. The closing `)` terminates the arg_list. Primarily meaningful in spec contexts.
+
+PAIR: ArgList -> HiddenExpressionVectorExpression
+EXAMPLE: `f(vector[1, 2])`
+The arg_list rule takes _expression, and vector_expression is an _expression. Inside the parentheses, `vector[1, 2]` parses as a vector_expression.
+
+PAIR: ArgList -> HiddenExpressionWhileExpression
+EXAMPLE: `f(while (true) { break })`
+The arg_list rule takes _expression, and while_expression is an _expression. Inside the parentheses, `while (true) { break }` parses as a while_expression. While semantically unusual as a function argument, the grammar permits it.
+
+=== BATCH 02 ===
+PAIR: AssignExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `x = loop { break 1 }`
+
+PAIR: AssignExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `x = match (y) { z => 1 }`
+
+PAIR: AssignExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `x = forall n: u64: n > 0` (in a spec block)
+
+PAIR: AssignExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `x = return 5`
+
+PAIR: AssignExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `x = vector[1, 2, 3]`
+
+PAIR: AssignExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `x = while (true) { break }`
+
+PAIR: AtBind -> BindListCommaBindList
+EXAMPLE: `match (v) { x @ (a, b) => a + b }` where the at-bind pattern binds `x` to a tuple-destructured comma_bind_list
+
+PAIR: BinaryExpression1 -> HiddenExpressionAbortExpression
+EXAMPLE: `a ==> abort b` (in a spec block, parses as `a ==> (abort b)`)
+
+PAIR: BinaryExpression1 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The assign operator `=` has precedence 1, which is lower than the implies operator `==>` with precedence 2. In `a ==> x = 5`, tree-sitter's precedence resolution reduces `a ==> x` first (prec 2 beats prec 1), preventing `x = 5` from forming as a child assign_expression. And `(a ==> x) = 5` fails because a binary_expression cannot be the LHS of assign (which requires `_unary_expression`). Parentheses would create an expression_list node, not a raw assign_expression.
+
+PAIR: BinaryExpression1 -> HiddenExpressionCastExpression
+EXAMPLE: `a ==> b as u64` (in a spec block, parses as `a ==> (b as u64)` since cast prec 16 > implies prec 2)
+
+PAIR: BinaryExpression1 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a ==> 'lbl: b` (in a spec block, the identified_expression `'lbl: b` becomes the RHS of `==>`)
+
+PAIR: BinaryExpression1 -> HiddenExpressionIfExpression
+EXAMPLE: `a ==> if (true) 1 else 2` (in a spec block)
+
+PAIR: BinaryExpression1 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a ==> |x| x + 1` (in a spec block, `|x| x + 1` is parsed as a lambda_expression since `|` at the start of an expression position begins lambda_bindings, not bitor)
+
+PAIR: BinaryExpression1 -> HiddenExpressionLoopExpression
+EXAMPLE: `a ==> loop { break }` (in a spec block)
+
+PAIR: BinaryExpression1 -> HiddenExpressionMacroCallExpression
+EXAMPLE: `a ==> assert!(true)` (in a spec block)
+
+PAIR: BinaryExpression1 -> HiddenExpressionMatchExpression
+EXAMPLE: `a ==> match (x) { y => true }` (in a spec block)
+
+PAIR: BinaryExpression1 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a ==> forall x: u64: x > 0` (in a spec block, the quantifier becomes the RHS of `==>`)
+
+PAIR: BinaryExpression1 -> HiddenExpressionReturnExpression
+EXAMPLE: `a ==> return b` (in a spec block, `return b` becomes the RHS of `==>`)
+
+PAIR: BinaryExpression1 -> HiddenExpressionVectorExpression
+EXAMPLE: `a ==> vector[1, 2]` (in a spec block)
+
+PAIR: BinaryExpression1 -> HiddenExpressionWhileExpression
+EXAMPLE: `a ==> while (true) { break }` (in a spec block)
+
+PAIR: BinaryExpression10 -> HiddenExpressionAbortExpression
+EXAMPLE: `a .. abort b` (parses as `a .. (abort b)` since `abort` is a prefix keyword, not a binary operator, so no precedence conflict with `..`)
+
+PAIR: BinaryExpression10 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The assign operator `=` has precedence 1, which is lower than the range operator `..` with precedence 6. In `a .. x = 5`, tree-sitter's precedence resolution reduces `a .. x` first (prec 6 beats prec 1), preventing `x = 5` from forming as a child assign_expression. And `(a .. x) = 5` fails because a binary_expression cannot be the LHS of assign (which requires `_unary_expression`). Parentheses would create an expression_list node, not a raw assign_expression.
+
+PAIR: BinaryExpression10 -> HiddenExpressionCastExpression
+EXAMPLE: `a .. b as u64` (parses as `a .. (b as u64)` since cast prec 16 > range prec 6)
+
+PAIR: BinaryExpression10 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a .. 'lbl: b` (the identified_expression `'lbl: b` becomes the RHS of `..`)
+
+PAIR: BinaryExpression10 -> HiddenExpressionIfExpression
+EXAMPLE: `a .. if (true) 1 else 2` (the if_expression becomes the RHS of `..`)
+
+=== BATCH 03 ===
+PAIR: BinaryExpression10 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a .. |x| x`
+The `..` (range, prec 6) parses LHS=`a`, then the RHS starts at `|x| x`. At expression-start position, `|` begins lambda_bindings. The parser produces bitor(a, lambda(x, x)). Lambda (prec 0) can appear as the RHS of `..` because the keyword `|...|` unambiguously starts a lambda at expression-start position.
+
+PAIR: BinaryExpression10 -> HiddenExpressionLoopExpression
+EXAMPLE: `a .. loop x`
+The `..` (range, prec 6) has RHS = `loop x`. The keyword `loop` unambiguously starts a loop_expression. Loop has no explicit precedence (effectively 0), so it cannot be the LHS, but it can freely appear as the RHS.
+
+PAIR: BinaryExpression10 -> HiddenExpressionMacroCallExpression
+EXAMPLE: `a .. foo!()`
+The `..` (range, prec 6) has RHS = `foo!()`. MacroCallExpression is also in `_expression_term` (prec 10 via `_unary_expression`), so it can appear as both LHS and RHS. As LHS: `foo!() .. a` also works since prec 10 > 6.
+
+PAIR: BinaryExpression10 -> HiddenExpressionMatchExpression
+EXAMPLE: `a .. match (x) { p => e }`
+The `..` (range, prec 6) has RHS = `match (x) { p => e }`. MatchExpression is also in `_expression_term` (prec 10), so it can appear as both LHS and RHS. As LHS: `match (x) { p => e } .. a` also works.
+
+PAIR: BinaryExpression10 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a .. forall x: u64: x > 0`
+The `..` (range, prec 6) has RHS = `forall x: u64: x > 0`. The keyword `forall` (or `exists`) unambiguously starts a quantifier_expression. Quantifier has prec.right(0), so it can only appear as the RHS, not the LHS. This is a spec-only construct.
+
+PAIR: BinaryExpression10 -> HiddenExpressionReturnExpression
+EXAMPLE: `a .. return b`
+The `..` (range, prec 6) has RHS = `return b`. The keyword `return` unambiguously starts a return_expression. Return has prec.left(0), so it can only appear as the RHS, not the LHS. In `a .. return b .. c`, the inner `..` (prec 6) binds tighter than return (prec 0), so `return` consumes `b .. c`, giving `a .. return (b .. c)`.
+
+PAIR: BinaryExpression10 -> HiddenExpressionVectorExpression
+EXAMPLE: `a .. vector[1, 2]`
+The `..` (range, prec 6) has RHS = `vector[1, 2]`. VectorExpression is also in `_expression_term` (prec 10), so it can appear as both LHS and RHS. As LHS: `vector[1, 2] .. a` also works since prec 10 > 6.
+
+PAIR: BinaryExpression10 -> HiddenExpressionWhileExpression
+EXAMPLE: `a .. while (true) { x }`
+The `..` (range, prec 6) has RHS = `while (true) { x }`. The keyword `while` unambiguously starts a while_expression. While has no explicit precedence (effectively 0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression11 -> HiddenExpressionAbortExpression
+EXAMPLE: `a | abort x`
+The `|` (bitor, prec 7) has RHS = `abort x`. The keyword `abort` unambiguously starts an abort_expression. Abort has no explicit precedence (effectively 0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression11 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has prec.left(1), which is lower than bitor's prec 7. On the RHS, the `|` operator at prec 7 steals the assign's LHS (a `_unary_expression` like `x`), producing `(a | x) = y`. But `a | x` is a binary expression, not a `_unary_expression`, so `= y` cannot form a valid assign_expression. On the LHS, assign at prec 1 loses to bitor at prec 7, so the bitor operator steals from within the assign. There is no way to construct an assign_expression as a direct child of a bitor binary expression without parentheses (which would create an ExpressionList node instead).
+
+PAIR: BinaryExpression11 -> HiddenExpressionCallExpression
+EXAMPLE: `f() | g()`
+The `|` (bitor, prec 7) has LHS = `f()` and RHS = `g()`. CallExpression is in `_expression_term` (prec 10 via `_unary_expression`), and 10 > 7, so it can freely appear as both LHS and RHS of bitor.
+
+PAIR: BinaryExpression11 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a | 'label: x`
+The `|` (bitor, prec 7) has RHS = `'label: x`. The `'` token uniquely starts a label/block_identifier, so identified_expression is unambiguous at expression-start position. Identified_expression has no explicit precedence (effectively 0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression11 -> HiddenExpressionIfExpression
+EXAMPLE: `if (true) x | y`
+IfExpression is in `_expression_term` (prec 10 via `_unary_expression`). Since 10 > 7, `if (true) x` binds as a unit and can be the LHS of `|`. As RHS: `a | if (true) x` also works.
+
+PAIR: BinaryExpression11 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a | |x| x`
+The `|` (bitor, prec 7) has RHS starting at the second `|`. At expression-start position after the bitor operator, the `|` token can only begin lambda_bindings (since bitor is a binary operator requiring a LHS, and we are parsing a new expression). The parser interprets `|x|` as lambda_bindings and `x` as the lambda body, giving bitor(a, lambda(x, x)). Lambda has prec 0, so it can only be the RHS, not the LHS.
+
+PAIR: BinaryExpression11 -> HiddenExpressionLoopExpression
+EXAMPLE: `a | loop x`
+The `|` (bitor, prec 7) has RHS = `loop x`. The keyword `loop` unambiguously starts a loop_expression. Loop has no explicit precedence (effectively 0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression11 -> HiddenExpressionMatchExpression
+EXAMPLE: `match (x) { p => e } | a`
+MatchExpression is in `_expression_term` (prec 10 via `_unary_expression`). Since 10 > 7, it can freely appear as both LHS and RHS of bitor. As RHS: `a | match (x) { p => e }` also works.
+
+PAIR: BinaryExpression11 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a | forall x: u64: x > 0`
+The `|` (bitor, prec 7) has RHS = `forall x: u64: x > 0`. The keyword `forall` unambiguously starts a quantifier_expression. Quantifier has prec.right(0), so it can only appear as the RHS. This is a spec-only construct.
+
+PAIR: BinaryExpression11 -> HiddenExpressionReturnExpression
+EXAMPLE: `a | return b`
+The `|` (bitor, prec 7) has RHS = `return b`. The keyword `return` unambiguously starts a return_expression. Return has prec.left(0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression11 -> HiddenExpressionVectorExpression
+EXAMPLE: `vector[1, 2] | a`
+VectorExpression is in `_expression_term` (prec 10 via `_unary_expression`). Since 10 > 7, it can freely appear as both LHS and RHS of bitor. As RHS: `a | vector[1, 2]` also works.
+
+PAIR: BinaryExpression11 -> HiddenExpressionWhileExpression
+EXAMPLE: `a | while (true) { x }`
+The `|` (bitor, prec 7) has RHS = `while (true) { x }`. The keyword `while` unambiguously starts a while_expression. While has no explicit precedence (effectively 0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression12 -> HiddenExpressionAbortExpression
+EXAMPLE: `a ^ abort x`
+The `^` (xor, prec 8) has RHS = `abort x`. The keyword `abort` unambiguously starts an abort_expression. Abort has no explicit precedence (effectively 0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression12 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has prec.left(1), which is lower than xor's prec 8. On the RHS, the `^` operator at prec 8 steals the assign's LHS (a `_unary_expression` like `x`), producing `(a ^ x) = y`. But `a ^ x` is a binary expression, not a `_unary_expression`, so `= y` cannot form a valid assign_expression. On the LHS, assign at prec 1 loses to xor at prec 8. There is no way to construct an assign_expression as a direct child of a xor binary expression.
+
+PAIR: BinaryExpression12 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a ^ 'label: x`
+The `^` (xor, prec 8) has RHS = `'label: x`. The `'` token uniquely starts a label/block_identifier, so identified_expression is unambiguous at expression-start position. Identified_expression has no explicit precedence (effectively 0), so it can only appear as the RHS, not the LHS.
+
+PAIR: BinaryExpression12 -> HiddenExpressionIfExpression
+EXAMPLE: `if (true) x ^ y`
+IfExpression is in `_expression_term` (prec 10 via `_unary_expression`). Since 10 > 8, `if (true) x` binds as a unit and can be the LHS of `^`. As RHS: `a ^ if (true) x` also works.
+
+PAIR: BinaryExpression12 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a ^ |x| x`
+The `^` (xor, prec 8) has RHS = `|x| x`. The `|` token at expression-start position after `^` begins lambda_bindings (no conflict with bitor since bitor requires a LHS). The parser produces xor(a, lambda(x, x)). Lambda has prec 0, so it can only be the RHS, not the LHS.
+
+=== BATCH 04 ===
+PAIR: BinaryExpression12 -> HiddenExpressionLoopExpression
+EXAMPLE: `a ^ loop { b }`
+
+PAIR: BinaryExpression12 -> HiddenExpressionMatchExpression
+EXAMPLE: `a ^ match (x) { p => 1 }`
+
+PAIR: BinaryExpression12 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures a ^ forall x: u64: x > 0; }`
+
+PAIR: BinaryExpression12 -> HiddenExpressionVectorExpression
+EXAMPLE: `a ^ vector[1, 2]`
+
+PAIR: BinaryExpression12 -> HiddenExpressionWhileExpression
+EXAMPLE: `a ^ while (c) { b }`
+
+PAIR: BinaryExpression13 -> HiddenExpressionAbortExpression
+EXAMPLE: `a & abort b`
+
+PAIR: BinaryExpression13 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The assign_expression has precedence 1 (prec.left(1)), which is lower than bitand's precedence 9. When parsing `a & x = b`, the parser resolves the shift-reduce conflict by reducing `a & x` as a binary_expression (prec 9 > prec 1), making `x` part of the bitand's RHS rather than the assign's LHS. The resulting `(a & x) = b` then fails because binary_expression is not _unary_expression (required for assign's LHS). There is no syntactic arrangement that places assign_expression as a direct child of BinaryExpression13.
+
+PAIR: BinaryExpression13 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a & 'lab: b`
+
+PAIR: BinaryExpression13 -> HiddenExpressionIfExpression
+EXAMPLE: `a & if (c) { b } else { d }`
+
+PAIR: BinaryExpression13 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a & |x| b`
+
+PAIR: BinaryExpression13 -> HiddenExpressionLoopExpression
+EXAMPLE: `a & loop { b }`
+
+PAIR: BinaryExpression13 -> HiddenExpressionMatchExpression
+EXAMPLE: `a & match (x) { p => 1 }`
+
+PAIR: BinaryExpression13 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures a & forall x: u64: x > 0; }`
+
+PAIR: BinaryExpression13 -> HiddenExpressionReturnExpression
+EXAMPLE: `a & return b`
+
+PAIR: BinaryExpression13 -> HiddenExpressionVectorExpression
+EXAMPLE: `a & vector[1, 2]`
+
+PAIR: BinaryExpression13 -> HiddenExpressionWhileExpression
+EXAMPLE: `a & while (c) { b }`
+
+PAIR: BinaryExpression14 -> HiddenExpressionAbortExpression
+EXAMPLE: `a << abort b`
+
+PAIR: BinaryExpression14 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The assign_expression has precedence 1 (prec.left(1)), which is lower than shl's precedence 10. When parsing `a << x = b`, the parser resolves the shift-reduce conflict by reducing `a << x` as a binary_expression (prec 10 > prec 1), making `x` part of shl's RHS rather than the assign's LHS. The resulting `(a << x) = b` then fails because binary_expression is not _unary_expression (required for assign's LHS). There is no syntactic arrangement that places assign_expression as a direct child of BinaryExpression14.
+
+PAIR: BinaryExpression14 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a << 'lab: b`
+
+PAIR: BinaryExpression14 -> HiddenExpressionIfExpression
+EXAMPLE: `a << if (c) { b } else { d }`
+
+PAIR: BinaryExpression14 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a << |x| b`
+
+PAIR: BinaryExpression14 -> HiddenExpressionLoopExpression
+EXAMPLE: `a << loop { b }`
+
+PAIR: BinaryExpression14 -> HiddenExpressionMatchExpression
+EXAMPLE: `a << match (x) { p => 1 }`
+
+PAIR: BinaryExpression14 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures a << forall x: u64: x > 0; }`
+
+PAIR: BinaryExpression14 -> HiddenExpressionVectorExpression
+EXAMPLE: `a << vector[1, 2]`
+
+=== BATCH 05 ===
+PAIR: BinaryExpression14 -> HiddenExpressionWhileExpression
+EXAMPLE: `a << while (true) { 1 }`
+
+PAIR: BinaryExpression15 -> HiddenExpressionAbortExpression
+EXAMPLE: `a >> abort 1`
+
+PAIR: BinaryExpression15 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has precedence 1, while >> has precedence 10. When parsing `a >> x = y`, tree-sitter's precedence resolution makes `x` bind to `>>` (prec 10 > 1), producing `(a >> x) = y`. But `(a >> x)` is a binary_expression, not a _unary_expression, so it cannot be the LHS of assign_expression (which requires _unary_expression as LHS). There is no way to make assign_expression appear as a direct child of any binary expression without parentheses, and parentheses create an expression_list node instead.
+
+PAIR: BinaryExpression15 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a >> 'lbl: x`
+
+PAIR: BinaryExpression15 -> HiddenExpressionIfExpression
+EXAMPLE: `a >> if (true) 1 else 2`
+
+PAIR: BinaryExpression15 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a >> |x| x`
+
+PAIR: BinaryExpression15 -> HiddenExpressionLoopExpression
+EXAMPLE: `a >> loop { 1 }`
+
+PAIR: BinaryExpression15 -> HiddenExpressionMacroCallExpression
+EXAMPLE: `a >> foo!(x)`
+
+PAIR: BinaryExpression15 -> HiddenExpressionMatchExpression
+EXAMPLE: `a >> match (x) { _ => 1 }`
+
+PAIR: BinaryExpression15 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a >> forall x: u64: x > 0`
+
+PAIR: BinaryExpression15 -> HiddenExpressionVectorExpression
+EXAMPLE: `a >> vector[1, 2]`
+
+PAIR: BinaryExpression15 -> HiddenExpressionWhileExpression
+EXAMPLE: `a >> while (true) { 1 }`
+
+PAIR: BinaryExpression16 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has precedence 1, while + has precedence 11. When parsing `a + x = y`, tree-sitter's precedence resolution makes `x` bind to `+` (prec 11 > 1), producing `(a + x) = y`. But `(a + x)` is a binary_expression, not a _unary_expression, so it cannot be the LHS of assign_expression. There is no way to make assign_expression appear as a direct child of any binary expression without parentheses, and parentheses create an expression_list node instead.
+
+PAIR: BinaryExpression16 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a + |x| x`
+
+PAIR: BinaryExpression16 -> HiddenExpressionMatchExpression
+EXAMPLE: `a + match (x) { _ => 1 }`
+
+PAIR: BinaryExpression16 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a + forall x: u64: x > 0`
+
+PAIR: BinaryExpression16 -> HiddenExpressionVectorExpression
+EXAMPLE: `a + vector[1, 2]`
+
+PAIR: BinaryExpression16 -> HiddenExpressionWhileExpression
+EXAMPLE: `a + while (true) { 1 }`
+
+PAIR: BinaryExpression17 -> HiddenExpressionAbortExpression
+EXAMPLE: `a - abort 1`
+
+PAIR: BinaryExpression17 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has precedence 1, while - has precedence 11. When parsing `a - x = y`, tree-sitter's precedence resolution makes `x` bind to `-` (prec 11 > 1), producing `(a - x) = y`. But `(a - x)` is a binary_expression, not a _unary_expression, so it cannot be the LHS of assign_expression. There is no way to make assign_expression appear as a direct child of any binary expression without parentheses, and parentheses create an expression_list node instead.
+
+PAIR: BinaryExpression17 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a - 'lbl: x`
+
+PAIR: BinaryExpression17 -> HiddenExpressionIfExpression
+EXAMPLE: `a - if (true) 1 else 2`
+
+PAIR: BinaryExpression17 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a - |x| x`
+
+PAIR: BinaryExpression17 -> HiddenExpressionLoopExpression
+EXAMPLE: `a - loop { 1 }`
+
+PAIR: BinaryExpression17 -> HiddenExpressionMatchExpression
+EXAMPLE: `a - match (x) { _ => 1 }`
+
+=== BATCH 06 ===
+PAIR: BinaryExpression17 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a - forall x: u64: x > 0`
+The `-` operator (prec 11) needs an `_expression` for its rhs. `forall x: u64: x > 0` is a `quantifier_expression` (prec.right, default 0) which is a valid `_expression`. After `a -`, the `forall` keyword unambiguously starts a quantifier expression. The quantifier consumes its body expression, becoming the rhs of `-`. Quantifiers are spec-only semantically but grammatically valid anywhere an `_expression` is accepted.
+
+PAIR: BinaryExpression17 -> HiddenExpressionVectorExpression
+EXAMPLE: `a - vector[1, 2]`
+The `-` operator (prec 11) needs an `_expression` for its rhs. `vector[1, 2]` is a `vector_expression` which is both an `_expression` and an `_expression_term`. It parses naturally as the rhs of `-`.
+
+PAIR: BinaryExpression17 -> HiddenExpressionWhileExpression
+EXAMPLE: `a - while (true) { 0 }`
+The `-` operator (prec 11) needs an `_expression` for its rhs. `while (true) { 0 }` is a `while_expression` (no explicit precedence, default 0) which is a valid `_expression`. After `a -`, the `while` keyword unambiguously starts a while expression, which consumes its condition and body, then becomes the rhs of `-`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionAbortExpression
+EXAMPLE: `a * abort 1`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `abort 1` is an `abort_expression` (no explicit precedence, default 0). After `a *`, the `abort` keyword unambiguously starts an abort expression. It consumes `1` as its optional argument and becomes the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The `assign_expression` has `prec.left(1)`, meaning `=` binds at precedence 1. The `*` operator has precedence 12. For `a * x = 5`, the `*` operator (prec 12 > prec 1) steals the operand `x` from `=`, producing `(a * x) = 5`. But `a * x` is a binary_expression, not a `_unary_expression` (which is required as the lhs of `assign_expression`), so this parse fails. There is no way to make `assign_expression` appear as a direct child of `*` because any valid lhs of `=` (a `_unary_expression`) would be captured by `*` first due to higher precedence. Parentheses would create an `expression_list` node, not an `assign_expression`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a * 'lbl: b`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `'lbl: b` is an `identified_expression` (no explicit precedence). After `a *`, the `'` token unambiguously starts a label/block_identifier, beginning an identified_expression. It consumes `b` as its body and becomes the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a * |x| x`
+The `*` operator (prec 12) needs an `_expression` for its rhs. After `a *`, the parser needs an expression. The `|` token cannot be interpreted as a bitor operator here because there is no complete expression between `*` and `|`. Instead, `|x|` is parsed as `lambda_bindings`, starting a `lambda_expression`. The lambda body `x` is consumed, and the complete lambda becomes the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionLoopExpression
+EXAMPLE: `a * loop { 0 }`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `loop { 0 }` is a `loop_expression` (no explicit precedence). After `a *`, the `loop` keyword unambiguously starts a loop expression. It consumes `{ 0 }` (a block) as its body and becomes the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionMatchExpression
+EXAMPLE: `a * match (x) { y => 0 }`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `match_expression` is both an `_expression` and an `_expression_term`, so it can appear at any precedence level. After `a *`, the `match` keyword starts a match expression which consumes its scrutinee and arms, then becomes the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a * forall x: u64: x > 0`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `forall x: u64: x > 0` is a `quantifier_expression` (prec.right, default 0). After `a *`, the `forall` keyword unambiguously starts a quantifier expression, which becomes the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionReturnExpression
+EXAMPLE: `a * return 1`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `return 1` is a `return_expression` (prec.left, default 0). After `a *`, the `return` keyword unambiguously starts a return expression. It consumes `1` as its return value and becomes the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionVectorExpression
+EXAMPLE: `a * vector[1, 2]`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `vector[1, 2]` is a `vector_expression` which is both an `_expression` and an `_expression_term`. It parses naturally as the rhs of `*`.
+
+PAIR: BinaryExpression18 -> HiddenExpressionWhileExpression
+EXAMPLE: `a * while (true) { 0 }`
+The `*` operator (prec 12) needs an `_expression` for its rhs. `while (true) { 0 }` is a `while_expression` (no explicit precedence). After `a *`, the `while` keyword starts a while expression, which consumes its condition and body, then becomes the rhs of `*`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionAbortExpression
+EXAMPLE: `a / abort 1`
+The `/` operator (prec 12) needs an `_expression` for its rhs. `abort 1` is an `abort_expression` (no explicit precedence). After `a /`, the `abort` keyword unambiguously starts an abort expression, which becomes the rhs of `/`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The `assign_expression` has `prec.left(1)`, and `/` has precedence 12. For `a / x = 5`, the `/` operator (prec 12 > prec 1) captures `x` as its rhs before `=` can claim it as its lhs. The resulting `(a / x) = 5` fails because `a / x` (a binary_expression) is not a valid `_unary_expression` for the lhs of `=`. There is no way to make an assign_expression a direct child of `/` without parentheses (which would create an `expression_list` instead).
+
+PAIR: BinaryExpression19 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a / 'lbl: b`
+The `/` operator (prec 12) needs an `_expression` for its rhs. `'lbl: b` is an `identified_expression` (no explicit precedence). After `a /`, the `'` token starts a label/block_identifier, beginning an identified_expression that becomes the rhs of `/`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a / |x| x`
+The `/` operator (prec 12) needs an `_expression` for its rhs. After `a /`, the `|` token cannot be a bitor operator (no complete expression precedes it in the rhs position), so `|x|` is parsed as lambda_bindings. The resulting lambda_expression becomes the rhs of `/`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionLoopExpression
+EXAMPLE: `a / loop { 1 }`
+The `/` operator (prec 12) needs an `_expression` for its rhs. `loop { 1 }` is a `loop_expression` (no explicit precedence). After `a /`, the `loop` keyword starts a loop expression that becomes the rhs of `/`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionMatchExpression
+EXAMPLE: `a / match (x) { y => 1 }`
+The `/` operator (prec 12) needs an `_expression` for its rhs. `match_expression` is an `_expression_term` and `_expression`. After `a /`, the `match` keyword starts a match expression that becomes the rhs of `/`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a / forall x: u64: x > 0`
+The `/` operator (prec 12) needs an `_expression` for its rhs. `forall x: u64: x > 0` is a `quantifier_expression` (prec.right, default 0). After `a /`, the `forall` keyword starts a quantifier expression that becomes the rhs of `/`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionVectorExpression
+EXAMPLE: `a / vector[1, 2]`
+The `/` operator (prec 12) needs an `_expression` for its rhs. `vector[1, 2]` is a `vector_expression` which is an `_expression_term`. It parses naturally as the rhs of `/`.
+
+PAIR: BinaryExpression19 -> HiddenExpressionWhileExpression
+EXAMPLE: `a / while (true) { 1 }`
+The `/` operator (prec 12) needs an `_expression` for its rhs. `while (true) { 1 }` is a `while_expression` (no explicit precedence). After `a /`, the `while` keyword starts a while expression that becomes the rhs of `/`.
+
+PAIR: BinaryExpression2 -> HiddenExpressionAbortExpression
+EXAMPLE: `a || abort 1`
+The `||` operator (prec 3) needs an `_expression` for its rhs. `abort 1` is an `abort_expression` (no explicit precedence). After `a ||`, the `abort` keyword unambiguously starts an abort expression that becomes the rhs of `||`.
+
+PAIR: BinaryExpression2 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The `assign_expression` has `prec.left(1)`, and `||` has precedence 3. For `a || x = 5`, the `||` operator (prec 3 > prec 1) captures `x` as its rhs before `=` can claim it as its lhs. The resulting `(a || x) = 5` fails because `a || x` (a binary_expression) is not a valid `_unary_expression` for the lhs of `=`. There is no way to make an assign_expression a direct child of `||` without parentheses (which would create an `expression_list` instead).
+
+PAIR: BinaryExpression2 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a || 'lbl: b`
+The `||` operator (prec 3) needs an `_expression` for its rhs. `'lbl: b` is an `identified_expression` (no explicit precedence). After `a ||`, the `'` token starts a label/block_identifier, beginning an identified_expression that becomes the rhs of `||`.
+
+=== BATCH 07 ===
+PAIR: BinaryExpression2 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a || |x| x`
+
+PAIR: BinaryExpression2 -> HiddenExpressionLoopExpression
+EXAMPLE: `a || loop { break 1 }`
+
+PAIR: BinaryExpression2 -> HiddenExpressionMatchExpression
+EXAMPLE: `a || match (x) { y => true }`
+
+PAIR: BinaryExpression2 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures a || forall x: u64: x > 0; }`
+
+PAIR: BinaryExpression2 -> HiddenExpressionVectorExpression
+EXAMPLE: `a || vector[1, 2]`
+
+PAIR: BinaryExpression2 -> HiddenExpressionWhileExpression
+EXAMPLE: `a || while (true) { break }`
+
+PAIR: BinaryExpression20 -> HiddenExpressionAbortExpression
+EXAMPLE: `a % abort b`
+
+PAIR: BinaryExpression20 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The assign operator `=` has precedence 1, which is lower than `%` at precedence 12. When parsing `a % x = y`, tree-sitter encounters a shift/reduce conflict at `=`: reduce `a % x` to binary_expression (prec 12) or shift `=` for assign_expression (prec 1). Since 12 > 1, reduce wins, producing `(a % x) = y`. But `(a % x)` is a binary_expression, not a `_unary_expression`, so the assign_expression parse fails. The alternative parse `a % (x = y)` is never reached due to precedence resolution. Parenthesizing would create an ExpressionList node, not a direct assign child.
+
+PAIR: BinaryExpression20 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec { ensures a % 'label: b; }`
+
+PAIR: BinaryExpression20 -> HiddenExpressionIfExpression
+EXAMPLE: `a % if (true) 1 else 2`
+
+PAIR: BinaryExpression20 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a % |x| x`
+
+PAIR: BinaryExpression20 -> HiddenExpressionLoopExpression
+EXAMPLE: `a % loop { break 1 }`
+
+PAIR: BinaryExpression20 -> HiddenExpressionMacroCallExpression
+EXAMPLE: `a % foo!(x)`
+
+PAIR: BinaryExpression20 -> HiddenExpressionMatchExpression
+EXAMPLE: `a % match (x) { y => 1 }`
+
+PAIR: BinaryExpression20 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures a % forall x: u64: x; }`
+
+PAIR: BinaryExpression20 -> HiddenExpressionVectorExpression
+EXAMPLE: `a % vector[1, 2]`
+
+PAIR: BinaryExpression20 -> HiddenExpressionWhileExpression
+EXAMPLE: `a % while (true) { break }`
+
+PAIR: BinaryExpression3 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The assign operator `=` has precedence 1, which is lower than `&&` at precedence 4. When parsing `a && x = y`, tree-sitter encounters a shift/reduce conflict at `=`: reduce `a && x` to binary_expression (prec 4) or shift `=` for assign_expression (prec 1). Since 4 > 1, reduce wins, producing `(a && x) = y`. But `(a && x)` is a binary_expression, not a `_unary_expression`, so the assign_expression parse fails. The alternative parse `a && (x = y)` is never reached due to precedence resolution. Parenthesizing would create an ExpressionList node, not a direct assign child.
+
+PAIR: BinaryExpression3 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec { ensures a && 'label: b; }`
+
+PAIR: BinaryExpression3 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a && |x| x`
+
+PAIR: BinaryExpression3 -> HiddenExpressionLoopExpression
+EXAMPLE: `a && loop { break true }`
+
+PAIR: BinaryExpression3 -> HiddenExpressionMatchExpression
+EXAMPLE: `a && match (x) { y => true }`
+
+PAIR: BinaryExpression3 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures a && forall x: u64: x > 0; }`
+
+PAIR: BinaryExpression3 -> HiddenExpressionVectorExpression
+EXAMPLE: `a && vector[1, 2]`
+
+PAIR: BinaryExpression3 -> HiddenExpressionWhileExpression
+EXAMPLE: `a && while (true) { break }`
+
+=== BATCH 08 ===
+PAIR: BinaryExpression4 -> HiddenExpressionAbortExpression
+EXAMPLE: `a == abort 0`
+
+PAIR: BinaryExpression4 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: assign_expression has prec.left(1), which is lower than == (prec 5). In `a == x = y`, the higher-precedence == binds `x` first as its rhs, producing `(a == x) = y` rather than `a == (x = y)`. There is no token sequence that places an assign_expression as a direct child of == without parentheses (which would create an ExpressionList node instead).
+
+PAIR: BinaryExpression4 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a == 'l: x`
+
+PAIR: BinaryExpression4 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a == |x| x`
+
+PAIR: BinaryExpression4 -> HiddenExpressionLoopExpression
+EXAMPLE: `a == loop { break 0 }`
+
+PAIR: BinaryExpression4 -> HiddenExpressionMatchExpression
+EXAMPLE: `match (x) { _ => 1 } == y`
+
+PAIR: BinaryExpression4 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a == forall x: u64: x > 0` (within a spec block)
+
+PAIR: BinaryExpression4 -> HiddenExpressionVectorExpression
+EXAMPLE: `vector[1, 2] == v`
+
+PAIR: BinaryExpression4 -> HiddenExpressionWhileExpression
+EXAMPLE: `a == while (true) { break }`
+
+PAIR: BinaryExpression5 -> HiddenExpressionAbortExpression
+EXAMPLE: `a != abort 0`
+
+PAIR: BinaryExpression5 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: assign_expression has prec.left(1), which is lower than != (prec 5). In `a != x = y`, the higher-precedence != binds `x` first as its rhs, producing `(a != x) = y` rather than `a != (x = y)`. There is no token sequence that places an assign_expression as a direct child of != without parentheses (which would create an ExpressionList node instead).
+
+PAIR: BinaryExpression5 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a != 'l: x`
+
+PAIR: BinaryExpression5 -> HiddenExpressionIfExpression
+EXAMPLE: `if (c) 1 else 2 != 0`
+
+PAIR: BinaryExpression5 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a != |x| x`
+
+PAIR: BinaryExpression5 -> HiddenExpressionLoopExpression
+EXAMPLE: `a != loop { break 0 }`
+
+PAIR: BinaryExpression5 -> HiddenExpressionMacroCallExpression
+EXAMPLE: `foo!(x) != y`
+
+PAIR: BinaryExpression5 -> HiddenExpressionMatchExpression
+EXAMPLE: `match (x) { _ => 1 } != y`
+
+PAIR: BinaryExpression5 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `a != forall x: u64: x > 0` (within a spec block)
+
+PAIR: BinaryExpression5 -> HiddenExpressionVectorExpression
+EXAMPLE: `vector[1, 2] != v`
+
+PAIR: BinaryExpression5 -> HiddenExpressionWhileExpression
+EXAMPLE: `a != while (true) { break }`
+
+PAIR: BinaryExpression6 -> HiddenExpressionAbortExpression
+EXAMPLE: `a < abort 0`
+
+PAIR: BinaryExpression6 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: assign_expression has prec.left(1), which is lower than < (prec 5). In `a < x = y`, the higher-precedence < binds `x` first as its rhs, producing `(a < x) = y` rather than `a < (x = y)`. There is no token sequence that places an assign_expression as a direct child of < without parentheses (which would create an ExpressionList node instead).
+
+PAIR: BinaryExpression6 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `a < 'l: x`
+
+PAIR: BinaryExpression6 -> HiddenExpressionIfExpression
+EXAMPLE: `if (c) 1 else 2 < 3`
+
+PAIR: BinaryExpression6 -> HiddenExpressionLambdaExpression
+EXAMPLE: `a < |x| x`
+
+=== BATCH 09 ===
+PAIR: BinaryExpression6 -> HiddenExpressionLoopExpression
+EXAMPLE: `x < loop { 1 }`
+
+PAIR: BinaryExpression6 -> HiddenExpressionMatchExpression
+EXAMPLE: `x < match (y) { _ => 1 }`
+
+PAIR: BinaryExpression6 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures x < forall i: u64: i > 0; }`
+
+PAIR: BinaryExpression6 -> HiddenExpressionVectorExpression
+EXAMPLE: `x < vector[1, 2]`
+
+PAIR: BinaryExpression6 -> HiddenExpressionWhileExpression
+EXAMPLE: `x < while (true) { break }`
+
+PAIR: BinaryExpression7 -> HiddenExpressionAbortExpression
+EXAMPLE: `x > abort 5`
+
+PAIR: BinaryExpression7 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has precedence 1, which is lower than BinaryExpression7's precedence 5. In `a > x = 5`, the `>` at prec 5 binds tighter than `=` at prec 1, so the parser groups it as `(a > x) = 5`, making the binary expression a child of the assign expression, not the other way around. Additionally, assign_expression requires its lhs to be `_unary_expression`, and `a > x` is a binary expression, so this parse also fails. There is no way to make an assign expression a direct child of a `>` binary expression without parentheses (which would create an ExpressionList node instead).
+
+PAIR: BinaryExpression7 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `x > 'label: y`
+
+PAIR: BinaryExpression7 -> HiddenExpressionIfExpression
+EXAMPLE: `x > if (true) { 1 } else { 2 }`
+
+PAIR: BinaryExpression7 -> HiddenExpressionLambdaExpression
+EXAMPLE: `x > |y| y`
+
+PAIR: BinaryExpression7 -> HiddenExpressionLoopExpression
+EXAMPLE: `x > loop { 1 }`
+
+PAIR: BinaryExpression7 -> HiddenExpressionMatchExpression
+EXAMPLE: `x > match (y) { _ => 1 }`
+
+PAIR: BinaryExpression7 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures x > forall i: u64: i > 0; }`
+
+PAIR: BinaryExpression7 -> HiddenExpressionVectorExpression
+EXAMPLE: `x > vector[1, 2]`
+
+PAIR: BinaryExpression7 -> HiddenExpressionWhileExpression
+EXAMPLE: `x > while (true) { break }`
+
+PAIR: BinaryExpression8 -> HiddenExpressionAbortExpression
+EXAMPLE: `x <= abort 5`
+
+PAIR: BinaryExpression8 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has precedence 1, which is lower than BinaryExpression8's precedence 5. In `a <= x = 5`, the `<=` at prec 5 binds tighter than `=` at prec 1, so the parser groups it as `(a <= x) = 5`, making the binary expression a child of the assign expression, not the other way around. Additionally, assign_expression requires its lhs to be `_unary_expression`, and `a <= x` is a binary expression, so this parse also fails. There is no way to make an assign expression a direct child of a `<=` binary expression without parentheses (which would create an ExpressionList node instead).
+
+PAIR: BinaryExpression8 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `x <= 'label: y`
+
+PAIR: BinaryExpression8 -> HiddenExpressionIfExpression
+EXAMPLE: `x <= if (true) { 1 } else { 2 }`
+
+PAIR: BinaryExpression8 -> HiddenExpressionLambdaExpression
+EXAMPLE: `x <= |y| y`
+
+PAIR: BinaryExpression8 -> HiddenExpressionLoopExpression
+EXAMPLE: `x <= loop { 1 }`
+
+PAIR: BinaryExpression8 -> HiddenExpressionMatchExpression
+EXAMPLE: `x <= match (y) { _ => 1 }`
+
+PAIR: BinaryExpression8 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures x <= forall i: u64: i > 0; }`
+
+PAIR: BinaryExpression8 -> HiddenExpressionVectorExpression
+EXAMPLE: `x <= vector[1, 2]`
+
+PAIR: BinaryExpression8 -> HiddenExpressionWhileExpression
+EXAMPLE: `x <= while (true) { break }`
+
+=== BATCH 10 ===
+PAIR: BinaryExpression9 -> HiddenExpressionAbortExpression
+EXAMPLE: `x >= abort 1`
+
+PAIR: BinaryExpression9 -> HiddenExpressionAssignExpression
+IMPOSSIBLE: AssignExpression has precedence 1, which is lower than BinaryExpression9 (>=, precedence 5). In `x >= a = 5`, the >= operator at prec 5 beats assign at prec 1, so tree-sitter reduces `x >= a` first, making the assign the parent of the binary expression, not the other way around. On the LHS, `a = 5 >= x` similarly parses as `a = (5 >= x)` because >= shifts at prec 5 > assign's prec 1.
+
+PAIR: BinaryExpression9 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `x >= 'label: y`
+
+PAIR: BinaryExpression9 -> HiddenExpressionIfExpression
+EXAMPLE: `1 >= if (true) 2 else 3`
+
+PAIR: BinaryExpression9 -> HiddenExpressionLambdaExpression
+EXAMPLE: `1 >= |x| x`
+
+PAIR: BinaryExpression9 -> HiddenExpressionLoopExpression
+EXAMPLE: `1 >= loop { break 2 }`
+
+PAIR: BinaryExpression9 -> HiddenExpressionMatchExpression
+EXAMPLE: `1 >= match (x) { _ => 2 }`
+
+PAIR: BinaryExpression9 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `1 >= forall x: u64: x > 0`
+
+PAIR: BinaryExpression9 -> HiddenExpressionVectorExpression
+EXAMPLE: `1 >= vector[2, 3]`
+
+PAIR: BinaryExpression9 -> HiddenExpressionWhileExpression
+EXAMPLE: `1 >= while (true) { break 2 }`
+
+PAIR: BindField1 -> BindListCommaBindList
+EXAMPLE: `Struct { (a, b): x }`
+
+PAIR: Block -> HiddenExpressionLambdaExpression
+EXAMPLE: `{ |x| x + 1 }`
+
+PAIR: Block -> HiddenExpressionMatchExpression
+EXAMPLE: `{ match (x) { _ => 1 } }`
+
+PAIR: Block -> HiddenExpressionQuantifierExpression
+EXAMPLE: `{ forall x: u64: x > 0 }`
+
+PAIR: Block -> HiddenExpressionVectorExpression
+EXAMPLE: `{ vector[1, 2, 3] }`
+
+PAIR: BlockItemInternal0Expression -> HiddenExpressionMatchExpression
+EXAMPLE: `{ match (x) { _ => 1 }; }`
+
+PAIR: BlockItemInternal0Expression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `{ forall x: u64: x > 0; }`
+
+PAIR: BlockItemInternal0Expression -> HiddenExpressionVectorExpression
+EXAMPLE: `{ vector[1, 2]; }`
+
+PAIR: BorrowExpression -> HiddenExpressionBinaryExpression
+IMPOSSIBLE: BorrowExpression has precedence 13 (unary), which is higher than all binary operators (max precedence 12 for *, /, %). For any `&expr op expr2`, the borrow reduces before the binary operator can form, e.g. `&a + b` parses as `(&a) + b`. The only way to get a binary expression inside a borrow is with parentheses, which creates an ExpressionList node, not a direct BinaryExpression child.
+
+PAIR: BorrowExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `& |x| x`
+
+PAIR: BorrowExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `& match (x) { _ => 1 }`
+
+PAIR: BorrowExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `& forall x: u64: x > 0`
+
+PAIR: BorrowExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `& vector[1, 2]`
+
+PAIR: BorrowExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `& while (true) { break }`
+
+PAIR: BreakExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `break abort 1`
+
+=== BATCH 11 ===
+PAIR: BreakExpression -> HiddenExpressionAssignExpression
+IMPOSSIBLE: break_expression gets precedence 10 via _unary_expression. assign_expression has prec.left(1). When parsing `break x = 5`, after `break x` the parser sees `=`. The reduce (prec 10) beats the shift for assign (prec 1), so `x` reduces as break's child first, producing `(break x) = 5` — an assign with break as LHS, not break with assign as child. There is no way to get assign_expression as break's direct child without parentheses (which would create expression_list instead).
+
+PAIR: BreakExpression -> HiddenExpressionBinaryExpression
+EXAMPLE: `break x + 1`
+The `+` operator has prec.left(11), which is higher than break's prec(10) via _unary_expression. So after parsing `break x`, the shift for `+` (prec 11) beats the reduce (prec 10), and `x + 1` forms a binary_expression that becomes break's child. Similarly works for `-` (prec 11), `*` (prec 12), `/` (prec 12), `%` (prec 12).
+
+PAIR: BreakExpression -> HiddenExpressionCallExpression
+EXAMPLE: `break f()`
+call_expression starts with name_expression followed by arg_list. After `break`, the parser parses `_expression`, which can be `f()` (a call_expression). The call is self-contained and unambiguous — `f(` clearly starts a call. The result is break_expression(break, call_expression(f, ())).
+
+PAIR: BreakExpression -> HiddenExpressionCastExpression
+EXAMPLE: `break x as u64`
+cast_expression has prec.left(16), which is higher than break's prec(10) via _unary_expression. After parsing `break x`, the shift for `as` (prec 16) beats the reduce (prec 10), so `x as u64` forms a cast_expression that becomes break's child.
+
+PAIR: BreakExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `break |x| x`
+Within break's child _expression context, `|` at the start of an expression can only begin lambda_bindings (a binary `|` requires a LHS expression first). So `|x| x` is parsed as lambda_expression, becoming break's child. The conflict ["break_expression"] in the grammar handles the ambiguity between break-with-expression vs break-alone-then-binary-|, and the lambda interpretation is valid.
+
+PAIR: BreakExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `break f!()`
+macro_call_expression starts with macro_module_access (containing `!`), making it unambiguous. After `break`, the parser parses `_expression`, which can be `f!()`. The `!` clearly distinguishes this from a regular call.
+
+PAIR: BreakExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `break match (x) { _ => 1 }`
+match_expression starts with the `match` keyword, which is unambiguous. match is fully delimited by `{ ... }`, so the result is break_expression(break, match_expression(...)). match_expression is both an _expression and an _expression_term.
+
+PAIR: BreakExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `break forall x: u64: x > 0`
+quantifier_expression starts with `forall` or `exists` keyword, which is unambiguous. After `break`, the parser parses `_expression`, which can be a quantifier_expression. Syntactically valid even though semantically unusual (break in spec context with quantifier).
+
+PAIR: BreakExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `break return 5`
+return_expression starts with the `return` keyword, which is unambiguous and cannot start any _expression_term. After `break`, the parser parses `_expression`, which can be return_expression(return, 5). The result is break_expression(break, return_expression(return, 5)).
+
+PAIR: BreakExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `break vector[1, 2]`
+vector_expression starts with `vector[` or `vector<...>[`, which is unambiguous. The vector is fully delimited by `]`. After `break`, the parser parses `_expression`, which can be vector_expression. vector_expression is both an _expression and an _expression_term.
+
+PAIR: BreakExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `break while (true) { 1 }`
+while_expression starts with the `while` keyword, which is unambiguous. After `break`, the parser parses `_expression`, which can be while_expression. When while's body is a delimited block, the while_expression is complete, and break's child is the while_expression.
+
+PAIR: CastExpression -> HiddenExpressionAbortExpression
+IMPOSSIBLE: cast_expression is prec.left(16, expr as type). For abort_expression to be the LHS, we'd need `abort x as T`. But abort_expression takes _expression as its child, and within that child, `x as T` is a cast_expression at prec 16. Since cast has high precedence, the child _expression absorbs `as T`, producing abort_expression(abort, cast_expression(x, as, T)). There is no way to make abort the LHS of cast without parentheses (which create expression_list).
+
+PAIR: CastExpression -> HiddenExpressionAssignExpression
+IMPOSSIBLE: assign_expression has prec.left(1), and its LHS is _unary_expression (not _expression). For assign to be cast's LHS, we'd need `(x = 5) as T`, but assign_expression cannot appear as _unary_expression directly. Even `x = 5 as T` would parse as `x = (5 as T)` since cast (prec 16) binds tighter than assign (prec 1). There is no way to get assign_expression as cast's direct child expression.
+
+PAIR: CastExpression -> HiddenExpressionBinaryExpression
+IMPOSSIBLE: All binary operators have precedence 2-12, which is lower than cast's prec.left(16). For `a + b as T`, the cast binds tighter: `a + (b as T)`, making binary_expression the parent of cast, not the child. To get binary as cast's child, you'd need `(a + b) as T`, but parentheses create expression_list, not binary_expression.
+
+PAIR: CastExpression -> HiddenExpressionIdentifiedExpression
+IMPOSSIBLE: identified_expression is `block_identifier _expression` (e.g., `'label: expr`). It ends with _expression, which would absorb `as T` (cast at prec 16). So `'label: x as T` parses as `'label: (x as T)`, not `('label: x) as T`. There is no way to make identified_expression the LHS of cast.
+
+PAIR: CastExpression -> HiddenExpressionIfExpression
+IMPOSSIBLE: if_expression has prec.right(0) and ends with _expression (either the then-branch or else-branch). The trailing _expression absorbs `as T` (cast at prec 16 > if's prec 0). So `if (c) x as T` parses as `if (c) (x as T)`, and `if (c) x else y as T` parses as `if (c) x else (y as T)`. Even with block bodies like `if (c) { x } else { y } as T`, the else-branch _expression absorbs `as T` since cast (prec 16) beats the block's reduce.
+
+PAIR: CastExpression -> HiddenExpressionLambdaExpression
+IMPOSSIBLE: lambda_expression ends with _expression (the body), which would absorb `as T`. So `|x| expr as T` parses as `|x| (expr as T)`, not `(|x| expr) as T`. Lambda cannot be the LHS of cast.
+
+PAIR: CastExpression -> HiddenExpressionLoopExpression
+IMPOSSIBLE: loop_expression is `loop _expression`, ending with _expression which absorbs `as T`. So `loop x as T` parses as `loop (x as T)`, not `(loop x) as T`. Even `loop { ... } as T` has the block absorbing `as T` since cast at prec 16 > block's reduce prec.
+
+PAIR: CastExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `match (x) { _ => 1 } as u64`
+match_expression is fully delimited — it ends with `}` from _match_body. After the closing `}`, the match_expression is complete. Then `as u64` extends it to a cast_expression. Since cast has prec.left(16) > match's prec(10 via _unary_expression), cast wins, making match_expression the LHS of cast.
+
+PAIR: CastExpression -> HiddenExpressionQuantifierExpression
+IMPOSSIBLE: quantifier_expression has prec.right(0) and ends with _expression (the body after `:`). The trailing _expression absorbs `as T` (cast at prec 16 > quantifier's prec 0). So `forall x: u64: expr as T` parses as `forall x: u64: (expr as T)`, not `(forall ...) as T`.
+
+PAIR: CastExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `vector[1, 2] as vector<u64>`
+vector_expression is fully delimited — it ends with `]`. After the closing `]`, the vector_expression is complete. Then `as vector<u64>` extends it to a cast_expression. Since cast has prec.left(16) > vector's prec(10 via _unary_expression), cast wins, making vector_expression the LHS of cast.
+
+PAIR: CastExpression -> HiddenExpressionWhileExpression
+IMPOSSIBLE: while_expression is `while (cond) body` where body is _expression. The body _expression absorbs `as T` (cast at prec 16). So `while (c) x as T` parses as `while (c) (x as T)`, not `(while (c) x) as T`. Even with block body `while (c) { ... } as T`, the body _expression absorbs `as T`.
+
+PAIR: CastExpression -> HiddenTypeFunctionType
+EXAMPLE: `x as |u64| -> bool`
+cast_expression takes _type as its `ty` field. function_type (e.g., `|u64| -> bool`) is a valid _type. So `x as |u64| -> bool` produces cast_expression(x, as, function_type(|u64| -> bool)).
+
+PAIR: CommaBindList -> HiddenBindAtBind
+EXAMPLE: `let (x @ Foo { y }, z) = val;`
+comma_bind_list contains _bind elements. at_bind (e.g., `x @ Foo { y }`) is a valid _bind. So a comma_bind_list can directly contain an at_bind as one of its elements.
+
+PAIR: CommaBindList -> HiddenBindLiteralValue
+EXAMPLE: `let (0x1, x) = val;`
+comma_bind_list contains _bind elements. _literal_value (e.g., address_literal, num_literal, bool_literal) is a valid _bind. So a comma_bind_list can directly contain a literal value as one of its binding patterns.
+
+=== BATCH 12 ===
+PAIR: Constant -> HiddenExpressionAbortExpression
+EXAMPLE: `const X: u64 = abort 0;`
+
+PAIR: Constant -> HiddenExpressionAssignExpression
+EXAMPLE: `const X: u64 = x = 5;`
+
+PAIR: Constant -> HiddenExpressionCallExpression
+EXAMPLE: `const X: u64 = f();`
+
+PAIR: Constant -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `const X: u64 = 'lab: 5;`
+
+PAIR: Constant -> HiddenExpressionLambdaExpression
+EXAMPLE: `const X: |u64| -> u64 = |x| x + 1;`
+
+PAIR: Constant -> HiddenExpressionLoopExpression
+EXAMPLE: `const X: u64 = loop { break 1 };`
+
+PAIR: Constant -> HiddenExpressionMacroCallExpression
+EXAMPLE: `const X: u64 = foo!(x);`
+
+PAIR: Constant -> HiddenExpressionMatchExpression
+EXAMPLE: `const X: u64 = match (x) { _ => 0 };`
+
+PAIR: Constant -> HiddenExpressionQuantifierExpression
+EXAMPLE: `const X: bool = forall x: u64: x > 0;`
+
+PAIR: Constant -> HiddenExpressionReturnExpression
+EXAMPLE: `const X: u64 = return 5;`
+
+PAIR: Constant -> HiddenExpressionVectorExpression
+EXAMPLE: `const X: vector<u64> = vector[1, 2, 3];`
+
+PAIR: Constant -> HiddenExpressionWhileExpression
+EXAMPLE: `const X: u64 = while (true) { break };`
+
+PAIR: Constant -> HiddenTypeFunctionType
+EXAMPLE: `const X: |u64| -> u64 = |x| x;`
+
+PAIR: Constant -> HiddenTypeRefType
+EXAMPLE: `const X: &u64 = &0;`
+
+PAIR: Constant -> HiddenTypeTupleType
+EXAMPLE: `const X: (u64, bool) = (1, true);`
+
+PAIR: DereferenceExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `*abort 0`
+
+PAIR: DereferenceExpression -> HiddenExpressionBinaryExpression
+IMPOSSIBLE: Dereference expression has PREC_RIGHT(13), which is higher than all binary operators (max precedence 12 for *, /, %). In a shift-reduce conflict between completing the dereference and shifting a binary operator, the dereference always reduces first. For example, `*a + b` parses as `(*a) + b`, not `*(a + b)`. There is no way to make a binary expression the direct child of a dereference expression without parentheses, and parentheses would create an ExpressionList node instead.
+
+PAIR: DereferenceExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `*'lab: x`
+
+PAIR: DereferenceExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `*|x| x + 1`
+
+PAIR: DereferenceExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `*loop { break 5 }`
+
+PAIR: DereferenceExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `*foo!(x)`
+
+PAIR: DereferenceExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `*match (x) { _ => 0 }`
+
+PAIR: DereferenceExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `*forall x: u64: x > 0`
+
+PAIR: DereferenceExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `*return 5`
+
+PAIR: DereferenceExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `*vector[1, 2]`
+
+=== BATCH 13 ===
+PAIR: DereferenceExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `*while (true) { 1 }`
+
+PAIR: DotExpression -> HiddenExpressionTermIfExpression
+EXAMPLE: `x.if (true) 1 else 2`
+
+PAIR: DotExpression -> HiddenExpressionTermSpecBlock
+EXAMPLE: `spec { }.f`
+
+PAIR: ExpField -> HiddenExpressionAssignExpression
+EXAMPLE: `Foo { f: x = 5 }`
+
+PAIR: ExpField -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `Foo { f: 'a: x }`
+
+PAIR: ExpField -> HiddenExpressionLambdaExpression
+EXAMPLE: `Foo { f: |x| x }`
+
+PAIR: ExpField -> HiddenExpressionLoopExpression
+EXAMPLE: `Foo { f: loop { break 1 } }`
+
+PAIR: ExpField -> HiddenExpressionMatchExpression
+EXAMPLE: `Foo { f: match (x) { y => 1 } }`
+
+PAIR: ExpField -> HiddenExpressionQuantifierExpression
+EXAMPLE: `Foo { f: forall x: u64: x > 0 }`
+
+PAIR: ExpField -> HiddenExpressionReturnExpression
+EXAMPLE: `Foo { f: return 5 }`
+
+PAIR: ExpField -> HiddenExpressionVectorExpression
+EXAMPLE: `Foo { f: vector[1, 2, 3] }`
+
+PAIR: ExpField -> HiddenExpressionWhileExpression
+EXAMPLE: `Foo { f: while (true) { } }`
+
+PAIR: ExpressionList -> HiddenExpressionLambdaExpression
+EXAMPLE: `(|x| x, 2)`
+
+PAIR: ExpressionList -> HiddenExpressionMatchExpression
+EXAMPLE: `(match (x) { y => 1 }, 2)`
+
+PAIR: ExpressionList -> HiddenExpressionVectorExpression
+EXAMPLE: `(vector[1, 2], 3)`
+
+PAIR: FieldAnnotation -> HiddenTypeFunctionType
+EXAMPLE: `struct S { f: |u64| -> bool }`
+
+PAIR: FieldAnnotation -> HiddenTypeRefType
+EXAMPLE: `struct S { f: &u64 }`
+
+PAIR: FunctionTypeParameters -> HiddenTypeFunctionType
+EXAMPLE: `||u64| -> bool|`
+
+PAIR: HiddenBindLiteralValue -> HiddenLiteralValueAddressLiteral
+EXAMPLE: `match (x) { @0x1 => 1 }`
+
+PAIR: HiddenBindLiteralValue -> HiddenLiteralValueByteStringLiteral
+EXAMPLE: `match (x) { b"hello" => 1 }`
+
+PAIR: HiddenBindLiteralValue -> HiddenLiteralValueHexStringLiteral
+EXAMPLE: `match (x) { x"AB" => 1 }`
+
+PAIR: HiddenBindLiteralValue -> HiddenLiteralValueStringLiteral
+EXAMPLE: `match (x) { "hello" => 1 }`
+
+PAIR: HiddenExpressionMatchExpression -> MatchExpression
+EXAMPLE: `match (x) { y => 1 }`
+
+PAIR: HiddenExpressionTermIfExpression -> IfExpression
+EXAMPLE: `if (true) 1 else 2`
+
+PAIR: HiddenExpressionVectorExpression -> VectorExpression
+EXAMPLE: `vector[1, 2, 3]`
+
+=== BATCH 14 ===
+PAIR: HiddenMacroSignature -> Modifier1
+EXAMPLE: `macro public fun foo() {}`
+The _macro_signature rule has optional($.modifier) before 'fun'. Modifier1 is the 'public' variant. With no outer modifier, 'public' is consumed by the inner optional($.modifier) in _macro_signature.
+
+PAIR: HiddenMacroSignature -> ModifierEntry
+EXAMPLE: `macro entry fun foo() {}`
+The _macro_signature rule has optional($.modifier) before 'fun'. ModifierEntry is the 'entry' variant. Tree-sitter parses 'entry' as the inner modifier of _macro_signature.
+
+PAIR: HiddenMacroSignature -> ModifierNative
+EXAMPLE: `macro native fun foo() {}`
+The _macro_signature rule has optional($.modifier) before 'fun'. ModifierNative is the 'native' variant. Tree-sitter parses 'native' as the inner modifier of _macro_signature.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionAbortExpression
+EXAMPLE: `spec module { aborts_if abort 0; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. AbortExpression is a valid _expression choice. The abort expression consumes 'abort 0', then ';' terminates the spec_abort_if.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionAssignExpression
+EXAMPLE: `spec module { aborts_if x = true; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. AssignExpression (prec 1) is a valid _expression choice. 'x = true' parses as an assign expression, and ';' terminates the spec_abort_if.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionCastExpression
+EXAMPLE: `spec module { aborts_if x as u64; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. CastExpression (prec 16) is a valid _expression choice. 'x as u64' parses as a cast expression.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec module { aborts_if 'lbl: x; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. IdentifiedExpression (block_identifier followed by _expression) is a valid _expression choice. This is a spec-only feature but spec blocks accept it.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionIfExpression
+EXAMPLE: `spec module { aborts_if if (true) 1 else 2; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. IfExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionLambdaExpression
+EXAMPLE: `spec module { aborts_if |x| x; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. LambdaExpression is a valid _expression choice. The lambda_bindings '|x|' followed by the body expression 'x' forms the lambda.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionLoopExpression
+EXAMPLE: `spec module { aborts_if loop { break true }; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. LoopExpression is a valid _expression choice. 'loop' followed by a block expression works here.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionMacroCallExpression
+EXAMPLE: `spec module { aborts_if foo!(1); }`
+The _spec_abort_if rule takes _expression for its 'expr' field. MacroCallExpression is a valid _expression choice. The macro call 'foo!(1)' parses as a macro_call_expression.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionMatchExpression
+EXAMPLE: `spec module { aborts_if match (x) { true => true }; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. MatchExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionReturnExpression
+EXAMPLE: `spec module { aborts_if return true; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. ReturnExpression is a valid _expression choice. 'return true' parses as a return expression.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionVectorExpression
+EXAMPLE: `spec module { aborts_if vector[1, 2]; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. VectorExpression is a valid _expression choice. 'vector[1, 2]' parses as a vector expression, and the trailing ';' terminates the spec_abort_if.
+
+PAIR: HiddenSpecAbortIf -> HiddenExpressionWhileExpression
+EXAMPLE: `spec module { aborts_if while (true) {}; }`
+The _spec_abort_if rule takes _expression for its 'expr' field. WhileExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionAbortExpression
+EXAMPLE: `spec module { modifies abort 0; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields via sepBy1. AbortExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionAssignExpression
+EXAMPLE: `spec module { modifies x = 1; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. AssignExpression (prec 1) is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionBinaryExpression
+EXAMPLE: `spec module { modifies x + y; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. BinaryExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionCastExpression
+EXAMPLE: `spec module { modifies x as u64; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. CastExpression (prec 16) is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec module { modifies 'lbl: x; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. IdentifiedExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionIfExpression
+EXAMPLE: `spec module { modifies if (true) 1 else 2; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. IfExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionLambdaExpression
+EXAMPLE: `spec module { modifies |x| x; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. LambdaExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionLoopExpression
+EXAMPLE: `spec module { modifies loop { break true }; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. LoopExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionMacroCallExpression
+EXAMPLE: `spec module { modifies foo!(1); }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. MacroCallExpression is a valid _expression choice.
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionMatchExpression
+EXAMPLE: `spec module { modifies match (x) { true => true }; }`
+The _spec_abort_with_or_modifies rule takes _expression for its 'additional_exp' fields. MatchExpression is a valid _expression choice.
+
+=== BATCH 15 ===
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec fun_name { aborts_with forall x: u64: x > 0; }`
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionReturnExpression
+EXAMPLE: `spec fun_name { aborts_with return 1; }`
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionUnaryExpression
+EXAMPLE: `spec fun_name { aborts_with !x; }`
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionVectorExpression
+EXAMPLE: `spec fun_name { aborts_with vector[1, 2]; }`
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenExpressionWhileExpression
+EXAMPLE: `spec fun_name { aborts_with while (true) {}; }`
+
+PAIR: HiddenSpecAbortWithOrModifies -> HiddenSpecAbortWithOrModifiesInternal0AbortsWith
+EXAMPLE: `spec fun_name { aborts_with x; }`
+
+PAIR: HiddenSpecAbortWithOrModifiesInternal0AbortsWith -> AbortsWithTok
+EXAMPLE: `spec fun_name { aborts_with x; }`
+
+PAIR: HiddenSpecBlockMemeberSpecApply -> SpecApply
+EXAMPLE: `spec module { apply x to foo; }`
+
+PAIR: HiddenSpecBlockMemeberSpecFunction -> HiddenSpecFunctionUninterpretedSpecFunction
+EXAMPLE: `spec module { fun foo(): u64; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionAbortExpression
+EXAMPLE: `spec fun_name { ensures abort 1; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionAssignExpression
+EXAMPLE: `spec fun_name { ensures x = 1; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionCastExpression
+EXAMPLE: `spec fun_name { ensures x as u64; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec fun_name { ensures 'a: x + 1; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionIfExpression
+EXAMPLE: `spec fun_name { ensures if (x > 0) true else false; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionLambdaExpression
+EXAMPLE: `spec fun_name { ensures |x| x + 1; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionLoopExpression
+EXAMPLE: `spec fun_name { ensures loop { break 1 }; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionMacroCallExpression
+EXAMPLE: `spec fun_name { ensures foo!(x); }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionMatchExpression
+EXAMPLE: `spec fun_name { ensures match (x) { 1 => true, _ => false }; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionReturnExpression
+EXAMPLE: `spec fun_name { ensures return true; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionVectorExpression
+EXAMPLE: `spec fun_name { ensures vector[1, 2, 3]; }`
+
+PAIR: HiddenSpecCondition -> HiddenExpressionWhileExpression
+EXAMPLE: `spec fun_name { ensures while (true) {}; }`
+
+PAIR: HiddenSpecConditionInternal02 -> ModuleTok
+EXAMPLE: `spec fun_name { requires module true; }`
+
+PAIR: HiddenSpecConditionInternal0Kind -> HiddenSpecConditionKindDecreases
+EXAMPLE: `spec fun_name { decreases x; }`
+
+PAIR: HiddenSpecConditionInternal0Kind -> HiddenSpecConditionKindSucceedsIf
+EXAMPLE: `spec fun_name { succeeds_if x > 0; }`
+
+PAIR: HiddenSpecConditionKindDecreases -> DecreasesTok
+EXAMPLE: `spec fun_name { decreases x; }`
+
+=== BATCH 16 ===
+PAIR: HiddenSpecConditionKindSucceedsIf -> SucceedsIfTok
+EXAMPLE: `spec { succeeds_if true; }`
+
+PAIR: HiddenSpecFunctionUninterpretedSpecFunction -> UninterpretedSpecFunction
+EXAMPLE: `spec { fun uninterp_fn(x: u64): u64; }`
+
+PAIR: HiddenUnaryExpressionInternal0ExpressionTerm -> HiddenExpressionTermIfExpression
+IMPOSSIBLE: In _expression contexts, the Cubix parser matches if_expression as HiddenExpressionIfExpression before trying HiddenExpressionUnaryExpression, so the _unary_expression -> _expression_term path is never taken. The only context requiring _unary_expression specifically is the LHS of assign_expression, but tree-sitter's precedence resolution (assign at prec.left(1) vs if at prec.right(0)) always causes the = token to be absorbed into the if's branch rather than making the if the LHS of the assignment. Therefore, if_expression can never appear through the _unary_expression -> _expression_term path.
+
+PAIR: HiddenUnaryExpressionInternal0ExpressionTerm -> HiddenExpressionTermMacroCallExpression
+EXAMPLE: `foo!(1) = 5`
+
+PAIR: IdentifiedExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `'label: abort 1`
+
+PAIR: IdentifiedExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `'label: x = 5`
+
+PAIR: IdentifiedExpression -> HiddenExpressionCallExpression
+EXAMPLE: `'label: foo(1)`
+
+PAIR: IdentifiedExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `'a: 'b: x`
+
+PAIR: IdentifiedExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `'label: |x| x + 1`
+
+PAIR: IdentifiedExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `'label: foo!(1)`
+
+PAIR: IdentifiedExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `'label: match (x) { 1 => 2 }`
+
+PAIR: IdentifiedExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures 'label: forall x: u64: x > 0; }`
+
+PAIR: IdentifiedExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `'label: return 1`
+
+PAIR: IdentifiedExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `'label: vector[1, 2, 3]`
+
+PAIR: IfExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `if (true) |x| x else |y| y`
+
+PAIR: IfExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `if (true) match (x) { 1 => 2 } else 0`
+
+PAIR: IfExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { ensures if (true) forall x: u64: x > 0 else false; }`
+
+PAIR: IfExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `if (true) vector[1, 2] else vector[3]`
+
+PAIR: IfExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `if (true) while (true) {} else {}`
+
+PAIR: IndexExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `v[abort 1]`
+
+PAIR: IndexExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `v[x = 1]`
+
+PAIR: IndexExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `v['label: x]`
+
+PAIR: IndexExpression -> HiddenExpressionIfExpression
+EXAMPLE: `v[if (true) 0 else 1]`
+
+PAIR: IndexExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `v[|x| x + 1]`
+
+PAIR: IndexExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `v[loop { break 1 }]`
+
+=== BATCH 17 ===
+PAIR: IndexExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `v[f!()]`
+
+PAIR: IndexExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `v[match (x) { _ => 1 }]`
+
+PAIR: IndexExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `v[forall x: u64: x > 0]` (inside a spec block)
+
+PAIR: IndexExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `v[return 0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermAnnotationExpression
+EXAMPLE: `(x: u64)[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermBlock
+EXAMPLE: `{ v }[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermBreakExpression
+EXAMPLE: `loop { break[0] }` (break with no body, then indexed)
+
+PAIR: IndexExpression -> HiddenExpressionTermContinueExpression
+EXAMPLE: `loop { continue[0] }` (continue with no label, then indexed)
+
+PAIR: IndexExpression -> HiddenExpressionTermDotExpression
+EXAMPLE: `v.data[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermIfExpression
+EXAMPLE: `if (b) { v1 } else { v2 }[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermMacroCallExpression
+EXAMPLE: `f!()[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermMatchExpression
+EXAMPLE: `match (x) { _ => v }[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermPackExpression
+EXAMPLE: `Foo { data: v }[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermSpecBlock
+EXAMPLE: `spec { }[0]`
+
+PAIR: IndexExpression -> HiddenExpressionTermUnitExpression
+EXAMPLE: `()[0]`
+
+PAIR: IndexExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `v[vector[1, 2]]`
+
+PAIR: IndexExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `v[while (cond) { expr }]`
+
+PAIR: LambdaBinding3 -> ColonTok
+EXAMPLE: `|x: u64| x` (the colon between bind and type in LambdaBinding3)
+
+PAIR: LambdaBinding3 -> HiddenBindAtBind
+EXAMPLE: `|x @ Foo {}: MyType| x`
+
+PAIR: LambdaBinding3 -> HiddenBindBindInternal0
+EXAMPLE: `|x: u64| x`
+
+PAIR: LambdaBinding3 -> HiddenBindBindUnpack
+EXAMPLE: `|Foo { x }: MyType| x`
+
+PAIR: LambdaBinding3 -> HiddenBindLiteralValue
+EXAMPLE: `|0x1: address| 0x1`
+
+PAIR: LambdaBinding3 -> HiddenTypeApplyType
+EXAMPLE: `|x: MyStruct| x`
+
+PAIR: LambdaBinding3 -> HiddenTypeFunctionType
+EXAMPLE: `|f: |u64| -> u64| f(1)`
+
+PAIR: LambdaBinding3 -> HiddenTypePrimitiveType
+EXAMPLE: `|x: u64| x`
+
+=== BATCH 18 ===
+PAIR: LambdaBinding3 -> HiddenTypeRefType
+EXAMPLE: `|x: &u64| x`
+
+PAIR: LambdaBinding3 -> HiddenTypeTupleType
+EXAMPLE: `|x: (u64, bool)| x`
+
+PAIR: LambdaBindingBind -> HiddenBindAtBind
+EXAMPLE: `|x @ Foo {}| x`
+
+PAIR: LambdaBindingBind -> HiddenBindLiteralValue
+EXAMPLE: `|true| 1`
+
+PAIR: LambdaBindings -> LambdaBinding3
+EXAMPLE: `|x: u64| x`
+
+PAIR: LambdaExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `|x| loop { break x }`
+
+PAIR: LambdaExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `|x| match (x) { _ => 0 }`
+
+PAIR: LambdaExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `|x| forall y: u64: y > 0`
+
+PAIR: LambdaExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `|x| vector[x]`
+
+PAIR: LambdaExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `|x| while (x > 0) { x = x - 1 }`
+
+PAIR: LambdaExpression -> HiddenTypeFunctionType
+EXAMPLE: `|x| -> |u64| -> u64 x`
+
+PAIR: LetStatement -> BindListOrBindList
+EXAMPLE: `let Foo | Bar = x`
+
+PAIR: LetStatement -> HiddenExpressionMatchExpression
+EXAMPLE: `let x = match (y) { _ => 0 }`
+
+PAIR: LetStatement -> HiddenExpressionQuantifierExpression
+EXAMPLE: `let x = forall y: u64: y > 0`
+
+PAIR: LetStatement -> HiddenExpressionReturnExpression
+EXAMPLE: `let x = return 0`
+
+PAIR: LetStatement -> HiddenExpressionVectorExpression
+EXAMPLE: `let x = vector[1, 2, 3]`
+
+PAIR: LoopExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `loop abort 1`
+
+PAIR: LoopExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `loop x = 1`
+
+PAIR: LoopExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `loop |x| x`
+
+PAIR: LoopExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `loop loop { break 0 }`
+
+PAIR: LoopExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `loop my_macro!(x)`
+
+PAIR: LoopExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `loop match (x) { _ => 0 }`
+
+PAIR: LoopExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `loop forall x: u64: x > 0`
+
+PAIR: LoopExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `loop vector[1, 2]`
+
+PAIR: LoopExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `loop while (true) { break 0 }`
+
+=== BATCH 19 ===
+PAIR: MacroFunctionDefinition -> ModifierNative
+EXAMPLE: `native macro fun foo() {}`
+The grammar allows `optional($.modifier)` before `macro`, and `modifier` includes `native`. Tree-sitter will parse this, producing a MacroFunctionDefinition with a ModifierNative child. (May be rejected semantically by the Move compiler, but the grammar permits it.)
+
+PAIR: MacroModuleAccess -> ModuleAccess1
+EXAMPLE: `$x!()`
+MacroModuleAccess is `module_access "!"`. ModuleAccess1 is `$ identifier`. So `$x!` would be a macro_module_access with a ModuleAccess1 as its access field. Used in a macro call like `$x!()`.
+
+PAIR: MacroModuleAccess -> ModuleAccess2
+EXAMPLE: `@x!()`
+ModuleAccess2 is `@ identifier`. So `@x!` would be a macro_module_access with ModuleAccess2. Used in a macro call like `@x!()`.
+
+PAIR: MacroModuleAccess -> ModuleAccess5
+EXAMPLE: `MyModule::foo!()`
+ModuleAccess5 is `module_identifier optional(type_args) :: member`. So `MyModule::foo!` gives a MacroModuleAccess with ModuleAccess5. Used in a macro call like `MyModule::foo!()`.
+
+PAIR: MacroModuleAccess -> ModuleAccess6
+EXAMPLE: `0x1::m::foo<u64>!()`
+ModuleAccess6 is `module_identity :: member type_arguments` (with required type args on the member). So `0x1::m::foo<u64>!` gives a MacroModuleAccess with ModuleAccess6. Used in a macro call like `0x1::m::foo<u64>!()`.
+
+PAIR: MacroModuleAccess -> ModuleAccess8
+EXAMPLE: `0x1::m::foo!()`
+ModuleAccess8 is `module_identity optional(type_args) :: member`. So `0x1::m::foo!` gives a MacroModuleAccess with ModuleAccess8. Used in a macro call like `0x1::m::foo!()`.
+
+PAIR: MacroModuleAccess -> ModuleAccess9
+EXAMPLE: `0x1::m::MyEnum::Variant!()`
+ModuleAccess9 is `module_identity :: enum_name optional(type_args) :: variant`. So `0x1::m::MyEnum::Variant!` gives a MacroModuleAccess with ModuleAccess9. Used in a macro call like `0x1::m::MyEnum::Variant!()`.
+
+PAIR: MacroModuleAccess -> ModuleAccessMember
+EXAMPLE: `forall!()`
+ModuleAccessMember is a reserved identifier used as module_access (one of `forall`, `exists`, `spec`). So `forall!` gives a MacroModuleAccess with ModuleAccessMember. Used in a macro call like `forall!()`.
+
+PAIR: MatchArm -> HiddenExpressionCastExpression
+EXAMPLE: `match (x) { y => x as u64 }`
+The match_arm body is `_expression`, and cast_expression is a valid `_expression`. So the body `x as u64` produces a CastExpression wrapped in HiddenExpressionCastExpression as a child of MatchArm.
+
+PAIR: MatchArm -> HiddenExpressionLambdaExpression
+EXAMPLE: `match (x) { y => |a| a + 1 }`
+The match_arm body is `_expression`, and lambda_expression is a valid `_expression`. So the body `|a| a + 1` produces a LambdaExpression wrapped in HiddenExpressionLambdaExpression.
+
+PAIR: MatchArm -> HiddenExpressionLoopExpression
+EXAMPLE: `match (x) { y => loop { break } }`
+The match_arm body is `_expression`, and loop_expression is a valid `_expression`. So the body `loop { break }` produces a LoopExpression wrapped in HiddenExpressionLoopExpression.
+
+PAIR: MatchArm -> HiddenExpressionMatchExpression
+EXAMPLE: `match (x) { y => match (y) { z => z } }`
+The match_arm body is `_expression`, and match_expression is a valid `_expression`. So a nested match in the arm body produces a MatchExpression wrapped in HiddenExpressionMatchExpression.
+
+PAIR: MatchArm -> HiddenExpressionQuantifierExpression
+EXAMPLE: `match (x) { y => forall a: u64: a > 0 }`
+The match_arm body is `_expression`, and quantifier_expression is a valid `_expression`. So a quantifier in the arm body produces a QuantifierExpression wrapped in HiddenExpressionQuantifierExpression. (Quantifiers are spec-only in practice but the grammar permits them.)
+
+PAIR: MatchArm -> HiddenExpressionVectorExpression
+EXAMPLE: `match (x) { y => vector[1, 2, 3] }`
+The match_arm body is `_expression`, and vector_expression is a valid `_expression`. So the body `vector[1, 2, 3]` produces a VectorExpression wrapped in HiddenExpressionVectorExpression.
+
+PAIR: MatchArm -> HiddenExpressionWhileExpression
+EXAMPLE: `match (x) { y => while (true) { break } }`
+The match_arm body is `_expression`, and while_expression is a valid `_expression`. So a while expression in the arm body produces a WhileExpression wrapped in HiddenExpressionWhileExpression.
+
+PAIR: MatchCondition -> HiddenExpressionAbortExpression
+EXAMPLE: `match (x) { y if (abort 0) => y }`
+The match_condition is `if ( _expression )`, and abort_expression is a valid `_expression`. So `abort 0` inside the match condition produces an AbortExpression wrapped in HiddenExpressionAbortExpression.
+
+PAIR: MatchCondition -> HiddenExpressionAssignExpression
+EXAMPLE: `match (x) { y if (z = 1) => y }`
+The match_condition is `if ( _expression )`, and assign_expression is a valid `_expression`. So `z = 1` inside the match condition produces an AssignExpression wrapped in HiddenExpressionAssignExpression.
+
+PAIR: MatchCondition -> HiddenExpressionCastExpression
+EXAMPLE: `match (x) { y if (x as u64) => y }`
+The match_condition is `if ( _expression )`, and cast_expression is a valid `_expression`. So `x as u64` inside the match condition produces a CastExpression wrapped in HiddenExpressionCastExpression. Note: the parentheses here are part of the match_condition syntax `if ( expr )`, not an expression_list wrapper.
+
+PAIR: MatchCondition -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `match (x) { y if ('label: x + 1) => y }`
+The match_condition is `if ( _expression )`, and identified_expression is a valid `_expression`. So `'label: x + 1` inside the match condition produces an IdentifiedExpression wrapped in HiddenExpressionIdentifiedExpression.
+
+PAIR: MatchCondition -> HiddenExpressionIfExpression
+EXAMPLE: `match (x) { y if (if (true) 1 else 2) => y }`
+The match_condition is `if ( _expression )`, and if_expression is a valid `_expression`. So a nested if expression inside the match condition produces an IfExpression wrapped in HiddenExpressionIfExpression.
+
+PAIR: MatchCondition -> HiddenExpressionLambdaExpression
+EXAMPLE: `match (x) { y if (|a| a) => y }`
+The match_condition is `if ( _expression )`, and lambda_expression is a valid `_expression`. So a lambda inside the match condition produces a LambdaExpression wrapped in HiddenExpressionLambdaExpression.
+
+PAIR: MatchCondition -> HiddenExpressionLoopExpression
+EXAMPLE: `match (x) { y if (loop { break }) => y }`
+The match_condition is `if ( _expression )`, and loop_expression is a valid `_expression`. So `loop { break }` inside the match condition produces a LoopExpression wrapped in HiddenExpressionLoopExpression.
+
+PAIR: MatchCondition -> HiddenExpressionMacroCallExpression
+EXAMPLE: `match (x) { y if (my_macro!(args)) => y }`
+The match_condition is `if ( _expression )`, and macro_call_expression is a valid `_expression`. So a macro call inside the match condition produces a MacroCallExpression wrapped in HiddenExpressionMacroCallExpression.
+
+PAIR: MatchCondition -> HiddenExpressionMatchExpression
+EXAMPLE: `match (x) { y if (match (y) { z => true }) => y }`
+The match_condition is `if ( _expression )`, and match_expression is a valid `_expression`. So a nested match inside the match condition produces a MatchExpression wrapped in HiddenExpressionMatchExpression.
+
+PAIR: MatchCondition -> HiddenExpressionQuantifierExpression
+EXAMPLE: `match (x) { y if (forall a: u64: a > 0) => y }`
+The match_condition is `if ( _expression )`, and quantifier_expression is a valid `_expression`. So a quantifier inside the match condition produces a QuantifierExpression wrapped in HiddenExpressionQuantifierExpression.
+
+=== BATCH 20 ===
+PAIR: MatchCondition -> HiddenExpressionReturnExpression
+EXAMPLE: `match (x) { p if (return 5) => 0 }`
+
+PAIR: MatchCondition -> HiddenExpressionVectorExpression
+EXAMPLE: `match (x) { p if (vector[1, 2]) => 0 }`
+
+PAIR: MatchCondition -> HiddenExpressionWhileExpression
+EXAMPLE: `match (x) { p if (while (true) {}) => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `match (abort 0) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `match (x = 5) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionBinaryExpression
+EXAMPLE: `match (x + y) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `match ('lbl: x) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionIfExpression
+EXAMPLE: `match (if (b) 1 else 2) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `match (|x| x) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `match (loop { break 1 }) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `match (my_macro!(x)) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `match (match (y) { _ => 0 }) { _ => 1 }`
+
+PAIR: MatchExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `match (forall x: u64: x > 0) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `match (return 0) { _ => 1 }`
+
+PAIR: MatchExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `match (vector[1, 2]) { _ => 0 }`
+
+PAIR: MatchExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `match (while (true) {}) { _ => 0 }`
+
+PAIR: ModuleAccess5 -> ColonColonTok
+EXAMPLE: `MyModule::my_function` (the `::` token is a structural child of ModuleAccess5)
+
+PAIR: ModuleAccess5 -> HiddenModuleIdentifier
+EXAMPLE: `MyModule::my_function` (the module identifier `MyModule` is wrapped as HiddenModuleIdentifier)
+
+PAIR: ModuleAccess5 -> Identifier
+EXAMPLE: `MyModule::my_function` (the member identifier `my_function` is a structural child)
+
+PAIR: ModuleAccess5 -> TypeArguments
+EXAMPLE: `MyModule<u64>::my_function` (optional type arguments on the module identifier)
+
+PAIR: ModuleAccess8 -> ColonColonTok
+EXAMPLE: `0x1::m::member` (the `::` separating optional type args from member)
+
+PAIR: ModuleAccess8 -> Identifier
+EXAMPLE: `0x1::m::member` (the member identifier is a structural child)
+
+PAIR: ModuleAccess8 -> ModuleIdentity
+EXAMPLE: `0x1::m::member` (the `0x1::m` module identity is a structural child)
+
+PAIR: ModuleAccess8 -> TypeArguments
+EXAMPLE: `0x1::m<u64>::member` (optional type arguments on module identity)
+
+PAIR: ModuleAccess9 -> ColonColonTok
+EXAMPLE: `0x1::m::MyEnum::Variant` (ColonColonTok appears twice as structural children in this enum variant access form)
+
+=== BATCH 21 ===
+PAIR: ModuleAccess9 -> Identifier
+EXAMPLE: `0x1::my_module::MyEnum::Variant` -- ModuleAccess9 directly contains Identifier children for enum_name and variant fields
+
+PAIR: ModuleAccess9 -> ModuleIdentity
+EXAMPLE: `0x1::my_module::MyEnum::Variant` -- the `0x1::my_module` part is a ModuleIdentity, which is the first child of ModuleAccess9
+
+PAIR: ModuleAccess9 -> TypeArguments
+EXAMPLE: `0x1::my_module::MyEnum<u64>::Variant` -- ModuleAccess9 has an optional TypeArguments child; when present (here `<u64>`), this pair exists
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `copy abort 5` -- move_or_copy_expression takes `_expression` as its expr field; `abort 5` is a valid abort_expression. No precedence conflict prevents this since abort is a prefix keyword, not a binary operator competing with move/copy's prec(13).
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionBinaryExpression
+IMPOSSIBLE: move_or_copy_expression has prec(13), which is higher than all binary operators (prec 2-12). In `move x + y`, the precedence conflict is resolved in favor of move binding `x` tightly: `(move x) + y`. There is no way for a binary expression to be the direct child of move/copy because move/copy always claims the immediate operand before any binary operator can form a binary expression around it.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionCallExpression
+EXAMPLE: `copy f(x)` -- After `copy`, the parser needs `_expression`. `f(x)` is a call_expression (which is a valid `_expression`). The `(` after `f` unambiguously indicates a call, and tree-sitter's GLR parser with prec.dynamic(1) on call_expression prefers parsing `f(x)` as a complete call rather than `f` alone as a name_expression with dangling `(x)`.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `copy 'my_label: x` -- identified_expression is `seq(block_identifier, _expression)`. After `copy`, the `'my_label:` starts a block_identifier (label followed by `:`), and `x` is the labeled expression body. This forms a valid `_expression` for move/copy's expr field.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionIfExpression
+EXAMPLE: `copy if (true) 1 else 2` -- if_expression is a valid `_expression`. After `copy`, the `if` keyword unambiguously starts an if_expression. No precedence conflict prevents this.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `copy |x| x` -- lambda_expression starts with `|` as part of lambda_bindings. After `copy`, `|` cannot be a binary bitor operator (no left operand), so it must start a lambda. The parser produces `copy (lambda_expression(|x|, x))`.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `copy loop { break 5 }` -- loop_expression is `seq('loop', _expression)` and is a valid `_expression`. After `copy`, the `loop` keyword unambiguously starts a loop_expression. No precedence conflict.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `copy my_macro!(x)` -- macro_call_expression is a valid `_expression`. After `copy`, `my_macro!` is parsed as macro_module_access (the `!` distinguishes it from a regular name), followed by `(x)` as arg_list. The parser produces `copy (macro_call_expression(my_macro!, (x)))`.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `copy match (x) { y => z }` -- match_expression is a valid `_expression` (also in `_expression_term`). After `copy`, the `match` keyword unambiguously starts a match_expression.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `copy forall x: u64: x > 0` (in a spec block) -- quantifier_expression is a valid `_expression`. After `copy`, `forall` starts a quantifier_expression with binding `x: u64` and body `x > 0`. Quantifiers are typically spec-only but grammatically valid as `_expression`.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `copy return 5` -- return_expression (with prec.left(0)) is a valid `_expression`. After `copy`, the `return` keyword starts a return_expression. No precedence conflict prevents this since `return` is a prefix keyword and move/copy's prec(13) doesn't create a shift-reduce conflict with it.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `copy vector[1, 2, 3]` -- vector_expression is a valid `_expression` (also in `_expression_term`). After `copy`, `vector[` unambiguously starts a vector_expression.
+
+PAIR: MoveOrCopyExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `copy while (true) { break 5 }` -- while_expression is a valid `_expression`. After `copy`, the `while` keyword unambiguously starts a while_expression. No precedence conflict.
+
+PAIR: MutBindField -> BindFieldSpreadOperator
+EXAMPLE: `match (x) { Foo { mut .. } => 1 }` -- mut_bind_field is `seq('mut', bind_field)`, and bind_field can be `_spread_operator` (i.e., `..`). So `mut ..` is a grammatically valid mut_bind_field where the bind_field is the spread operator. This appears in named bind fields within pattern matching or let destructuring.
+
+PAIR: NameExpression -> ModuleAccess5
+EXAMPLE: `MyModule::my_function` -- ModuleAccess5 is `seq(_module_identifier, optional(type_arguments), '::', identifier)`. In `MyModule::my_function`, `MyModule` is the _module_identifier and `my_function` is the member identifier. This forms a valid module_access inside a name_expression. Tree-sitter prefers ModuleAccess5 over ModuleAccess7 because ModuleAccess5 appears earlier in the choice and the conflict `[$.module_access]` is resolved in favor of the first matching alternative.
+
+PAIR: NameExpression -> ModuleAccess8
+EXAMPLE: `0x1::coin::value` -- ModuleAccess8 is `seq(module_identity, optional(type_arguments), '::', identifier)`. Here `0x1::coin` is the module_identity (address=0x1, module=coin) and `value` is the member. This forms a valid module_access within a name_expression. Cannot be ModuleAccess6 (requires type_arguments) or ModuleAccess9 (requires additional `::variant`).
+
+PAIR: NameExpression -> ModuleAccess9
+EXAMPLE: `0x1::my_module::MyEnum::Variant` -- ModuleAccess9 is `seq(module_identity, '::', enum_name, optional(type_arguments), '::', variant)`. Here `0x1::my_module` is the module_identity, `MyEnum` is the enum_name, and `Variant` is the variant identifier. This forms a valid module_access within a name_expression, used for referencing enum variants from external modules.
+
+PAIR: PositionalFields -> HiddenTypeFunctionType
+EXAMPLE: `struct Foo(|u64| -> bool)` -- positional_fields contains a list of `_type`, and function_type (`|u64| -> bool`) is a valid `_type`. The `|` in type context unambiguously starts function_type_parameters.
+
+PAIR: PositionalFields -> HiddenTypeRefType
+EXAMPLE: `struct Foo(&u64)` -- positional_fields contains a list of `_type`, and ref_type (`&u64`) is a valid `_type`. While references in struct fields may be semantically restricted, the grammar allows it.
+
+PAIR: PositionalFields -> HiddenTypeTupleType
+EXAMPLE: `struct Foo((u64, bool))` -- positional_fields contains a list of `_type`, and tuple_type (`(u64, bool)`) is a valid `_type`. The outer parentheses are from positional_fields, the inner parentheses from the tuple_type.
+
+PAIR: QuantifierBinding1 -> HiddenTypeFunctionType
+EXAMPLE: `forall f: |u64| -> bool: f(0)` (in a spec block) -- QuantifierBinding1 is `seq(identifier, ':', _type)`, and function_type (`|u64| -> bool`) is a valid `_type`. The `|` delimiters in function_type_parameters are in type context and do not conflict with other uses of `|`.
+
+PAIR: QuantifierBinding1 -> HiddenTypeRefType
+EXAMPLE: `forall x: &u64: *x > 0` (in a spec block) -- QuantifierBinding1 is `seq(identifier, ':', _type)`, and ref_type (`&u64`) is a valid `_type`. The `&` starts imm_ref, forming a reference type.
+
+=== BATCH 22 ===
+PAIR: QuantifierBinding1 -> HiddenTypeTupleType
+EXAMPLE: `forall x: (u64, bool): x == x`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionAbortExpression
+EXAMPLE: `forall x in abort 1: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionAssignExpression
+EXAMPLE: `forall x in y = 5: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionCallExpression
+EXAMPLE: `forall x in get_range(): true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionCastExpression
+EXAMPLE: `forall x in v as u64: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `forall x in 'lbl: some_expr: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionIfExpression
+EXAMPLE: `forall x in if (b) v1 else v2: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionLambdaExpression
+EXAMPLE: `forall x in |y| y + 1: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionLoopExpression
+EXAMPLE: `forall x in loop { break 1 }: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionMacroCallExpression
+EXAMPLE: `forall x in foo!(arg): true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionMatchExpression
+EXAMPLE: `forall x in match (v) { _ => 0 }: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `forall x in forall y: u64: y > 0: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionReturnExpression
+EXAMPLE: `forall x in return 1: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionUnaryExpression
+EXAMPLE: `forall x in !b: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionVectorExpression
+EXAMPLE: `forall x in vector[1, 2, 3]: true`
+
+PAIR: QuantifierBinding2 -> HiddenExpressionWhileExpression
+EXAMPLE: `forall x in while (cond) { break }: true`
+
+PAIR: QuantifierExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `forall x: u64: abort 1`
+
+PAIR: QuantifierExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `forall x: u64: y = 5`
+
+PAIR: QuantifierExpression -> HiddenExpressionCastExpression
+EXAMPLE: `forall x: u64: x as u128`
+
+PAIR: QuantifierExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `forall x: u64: 'lbl: x + 1`
+
+PAIR: QuantifierExpression -> HiddenExpressionIfExpression
+EXAMPLE: `forall x: u64: if (x > 0) true else false`
+
+PAIR: QuantifierExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `forall x: u64: |y| y + x`
+
+PAIR: QuantifierExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `forall x: u64: loop { break x }`
+
+PAIR: QuantifierExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `forall x: u64: foo!(x)`
+
+PAIR: QuantifierExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `forall x: u64: match (x) { _ => true }`
+
+=== BATCH 23 ===
+PAIR: QuantifierExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `forall x: u64: forall y: u64: x + y > 0`
+
+PAIR: QuantifierExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `forall x: u64: return x`
+
+PAIR: QuantifierExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `forall x: u64: vector[x, x]`
+
+PAIR: QuantifierExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `forall x: u64: while (true) x`
+
+PAIR: RefType -> HiddenTypeFunctionType
+EXAMPLE: `&|u64| -> bool`
+
+PAIR: RefType -> HiddenTypeRefType
+EXAMPLE: `& &u64`
+
+PAIR: ReturnExpression1 -> HiddenExpressionAssignExpression
+EXAMPLE: `return x = 5`
+
+PAIR: ReturnExpression1 -> HiddenExpressionLambdaExpression
+EXAMPLE: `return |x| x + 1`
+
+PAIR: ReturnExpression1 -> HiddenExpressionMatchExpression
+EXAMPLE: `return match (x) { 0 => 1, _ => 2 }`
+
+PAIR: ReturnExpression1 -> HiddenExpressionQuantifierExpression
+EXAMPLE: `return forall x: u64: x > 0`
+
+PAIR: ReturnExpression1 -> HiddenExpressionVectorExpression
+EXAMPLE: `return vector[1, 2, 3]`
+
+PAIR: SpecApply -> ExceptTok
+EXAMPLE: `spec { apply foo to bar except baz; }`
+
+PAIR: SpecApply -> HiddenExpressionAbortExpression
+EXAMPLE: `spec { apply abort 0 to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionAssignExpression
+EXAMPLE: `spec { apply x = 1 to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionBinaryExpression
+EXAMPLE: `spec { apply x + 1 to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionCallExpression
+EXAMPLE: `spec { apply f() to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionCastExpression
+EXAMPLE: `spec { apply x as u64 to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec { apply 'a: x to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionIfExpression
+EXAMPLE: `spec { apply if (c) t else f to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionLambdaExpression
+EXAMPLE: `spec { apply |x| x + 1 to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionLoopExpression
+EXAMPLE: `spec { apply loop { break } to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionMacroCallExpression
+EXAMPLE: `spec { apply f!() to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionMatchExpression
+EXAMPLE: `spec { apply match (x) { 0 => 1 } to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { apply forall x: u64: x > 0 to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionReturnExpression
+EXAMPLE: `spec { apply return 0 to foo; }`
+
+=== BATCH 24 ===
+PAIR: SpecApply -> HiddenExpressionUnaryExpression
+EXAMPLE: `spec { apply !cond to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionVectorExpression
+EXAMPLE: `spec { apply vector[1, 2] to foo; }`
+
+PAIR: SpecApply -> HiddenExpressionWhileExpression
+EXAMPLE: `spec { apply while (true) { break } to foo; }`
+
+PAIR: SpecApply -> SemicolonTok
+EXAMPLE: `spec { apply expr to foo; }` -- the semicolon at the end of spec_apply is always present per the grammar rule
+
+PAIR: SpecApply -> SpecApplyPattern
+EXAMPLE: `spec { apply expr to foo; }` -- at least one spec_apply_pattern is required by sepBy1 in the grammar rule
+
+PAIR: SpecApplyPattern -> SpecApplyNamePattern
+EXAMPLE: `spec { apply expr to foo; }` -- spec_apply_name_pattern is a required field in every spec_apply_pattern
+
+PAIR: SpecApplyPattern -> SpecApplyPatternInternal0Internal
+EXAMPLE: `spec { apply expr to internal foo; }`
+
+PAIR: SpecApplyPattern -> SpecApplyPatternInternal0Public
+EXAMPLE: `spec { apply expr to public foo; }`
+
+PAIR: SpecApplyPattern -> TypeParameters
+EXAMPLE: `spec { apply expr to foo<T>; }`
+
+PAIR: SpecApplyPatternInternal0Internal -> InternalTok
+EXAMPLE: `spec { apply expr to internal foo; }` -- the InternalTok is the 'internal' keyword token inside the wrapper
+
+PAIR: SpecApplyPatternInternal0Public -> PublicTok
+EXAMPLE: `spec { apply expr to public foo; }` -- the PublicTok is the 'public' keyword token inside the wrapper
+
+PAIR: SpecBlockInternal0SpecFunction -> HiddenSpecFunctionUninterpretedSpecFunction
+EXAMPLE: `spec fun foo(): u64;` -- an uninterpreted spec function has signature but no body and no 'native' keyword
+
+PAIR: SpecBody -> HiddenSpecBlockMemeberSpecApply
+EXAMPLE: `spec { apply expr to foo; }` -- spec_apply is one of the _spec_block_memeber choices within spec_body
+
+PAIR: SpecBody -> UseDeclaration
+EXAMPLE: `spec { use 0x1::M; }` -- spec_body explicitly allows repeat($.use_declaration)
+
+PAIR: SpecInclude -> HiddenExpressionAbortExpression
+EXAMPLE: `spec { include abort 0; }`
+
+PAIR: SpecInclude -> HiddenExpressionAssignExpression
+EXAMPLE: `spec { include x = 5; }`
+
+PAIR: SpecInclude -> HiddenExpressionBinaryExpression
+EXAMPLE: `spec { include a + b; }`
+
+PAIR: SpecInclude -> HiddenExpressionCallExpression
+EXAMPLE: `spec { include foo(); }`
+
+PAIR: SpecInclude -> HiddenExpressionCastExpression
+EXAMPLE: `spec { include x as u64; }`
+
+PAIR: SpecInclude -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec { include 'a: x; }`
+
+PAIR: SpecInclude -> HiddenExpressionIfExpression
+EXAMPLE: `spec { include if (true) 1 else 2; }`
+
+PAIR: SpecInclude -> HiddenExpressionLambdaExpression
+EXAMPLE: `spec { include |x| x; }`
+
+PAIR: SpecInclude -> HiddenExpressionLoopExpression
+EXAMPLE: `spec { include loop { break }; }`
+
+PAIR: SpecInclude -> HiddenExpressionMacroCallExpression
+EXAMPLE: `spec { include foo!(x); }`
+
+PAIR: SpecInclude -> HiddenExpressionMatchExpression
+EXAMPLE: `spec { include match (x) { y => z }; }`
+
+=== BATCH 25 ===
+PAIR: SpecInclude -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec module { include forall x: u64: x > 0; }`
+
+PAIR: SpecInclude -> HiddenExpressionReturnExpression
+EXAMPLE: `spec module { include return 1; }`
+
+PAIR: SpecInclude -> HiddenExpressionVectorExpression
+EXAMPLE: `spec module { include vector[1, 2, 3]; }`
+
+PAIR: SpecInclude -> HiddenExpressionWhileExpression
+EXAMPLE: `spec module { include while (true) 1; }`
+
+PAIR: SpecInvariant -> ConditionProperties
+EXAMPLE: `spec module { invariant [global] x > 0; }`
+
+PAIR: SpecInvariant -> HiddenExpressionAbortExpression
+EXAMPLE: `spec module { invariant abort 1; }`
+
+PAIR: SpecInvariant -> HiddenExpressionAssignExpression
+EXAMPLE: `spec module { invariant x = 1; }`
+
+PAIR: SpecInvariant -> HiddenExpressionCastExpression
+EXAMPLE: `spec module { invariant x as u64; }`
+
+PAIR: SpecInvariant -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec module { invariant 'label: x + 1; }`
+
+PAIR: SpecInvariant -> HiddenExpressionIfExpression
+EXAMPLE: `spec module { invariant if (true) 1 else 2; }`
+
+PAIR: SpecInvariant -> HiddenExpressionLambdaExpression
+EXAMPLE: `spec module { invariant |x| x + 1; }`
+
+PAIR: SpecInvariant -> HiddenExpressionLoopExpression
+EXAMPLE: `spec module { invariant loop { break }; }`
+
+PAIR: SpecInvariant -> HiddenExpressionMacroCallExpression
+EXAMPLE: `spec module { invariant assert!(true); }`
+
+PAIR: SpecInvariant -> HiddenExpressionMatchExpression
+EXAMPLE: `spec module { invariant match (x) { 1 => true, _ => false }; }`
+
+PAIR: SpecInvariant -> HiddenExpressionReturnExpression
+EXAMPLE: `spec module { invariant return true; }`
+
+PAIR: SpecInvariant -> HiddenExpressionUnaryExpression
+EXAMPLE: `spec module { invariant !false; }`
+
+PAIR: SpecInvariant -> HiddenExpressionVectorExpression
+EXAMPLE: `spec module { invariant vector[1, 2]; }`
+
+PAIR: SpecInvariant -> HiddenExpressionWhileExpression
+EXAMPLE: `spec module { invariant while (true) 1; }`
+
+PAIR: SpecInvariant -> SpecInvariantInternal0Module
+EXAMPLE: `spec module { invariant module x > 0; }`
+
+PAIR: SpecInvariant -> SpecInvariantInternal0Pack
+EXAMPLE: `spec module { invariant pack x > 0; }`
+
+PAIR: SpecInvariant -> SpecInvariantInternal0Unpack
+EXAMPLE: `spec module { invariant unpack x > 0; }`
+
+PAIR: SpecInvariant -> SpecInvariantInternal0Update
+EXAMPLE: `spec module { invariant update x > 0; }`
+
+PAIR: SpecInvariantInternal0Module -> ModuleTok
+EXAMPLE: `spec module { invariant module x > 0; }`
+
+PAIR: SpecInvariantInternal0Pack -> PackTok
+EXAMPLE: `spec module { invariant pack x > 0; }`
+
+PAIR: SpecInvariantInternal0Unpack -> UnpackTok
+EXAMPLE: `spec module { invariant unpack x > 0; }`
+
+=== BATCH 26 ===
+PAIR: SpecInvariantInternal0Update -> UpdateTok
+EXAMPLE: `spec { invariant update x > 0; }`
+
+PAIR: SpecLet -> HiddenExpressionAbortExpression
+EXAMPLE: `spec { let x = abort 0; }`
+
+PAIR: SpecLet -> HiddenExpressionAssignExpression
+EXAMPLE: `spec { let x = y = 1; }`
+
+PAIR: SpecLet -> HiddenExpressionCastExpression
+EXAMPLE: `spec { let x = 1 as u64; }`
+
+PAIR: SpecLet -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `spec { let x = 'label: 1 + 2; }`
+
+PAIR: SpecLet -> HiddenExpressionIfExpression
+EXAMPLE: `spec { let x = if (true) 1 else 2; }`
+
+PAIR: SpecLet -> HiddenExpressionLambdaExpression
+EXAMPLE: `spec { let x = |a| a + 1; }`
+
+PAIR: SpecLet -> HiddenExpressionLoopExpression
+EXAMPLE: `spec { let x = loop { break 1 }; }`
+
+PAIR: SpecLet -> HiddenExpressionMacroCallExpression
+EXAMPLE: `spec { let x = assert!(true); }`
+
+PAIR: SpecLet -> HiddenExpressionMatchExpression
+EXAMPLE: `spec { let x = match (y) { 0 => 1, _ => 2 }; }`
+
+PAIR: SpecLet -> HiddenExpressionQuantifierExpression
+EXAMPLE: `spec { let x = forall a: u64: a > 0; }`
+
+PAIR: SpecLet -> HiddenExpressionReturnExpression
+EXAMPLE: `spec { let x = return 0; }`
+
+PAIR: SpecLet -> HiddenExpressionVectorExpression
+EXAMPLE: `spec { let x = vector[1, 2, 3]; }`
+
+PAIR: SpecLet -> HiddenExpressionWhileExpression
+EXAMPLE: `spec { let x = while (true) {}; }`
+
+PAIR: SpecProperty -> HiddenLiteralValueAddressLiteral
+EXAMPLE: `spec { pragma verify = @0x1; }`
+
+PAIR: SpecProperty -> HiddenLiteralValueByteStringLiteral
+EXAMPLE: `spec { pragma name = b"hello"; }`
+
+PAIR: SpecProperty -> HiddenLiteralValueHexStringLiteral
+EXAMPLE: `spec { pragma name = x"0A"; }`
+
+PAIR: SpecProperty -> HiddenLiteralValueNumLiteral
+EXAMPLE: `spec { pragma timeout = 100; }`
+
+PAIR: SpecProperty -> HiddenLiteralValueStringLiteral
+EXAMPLE: `spec { pragma name = "hello"; }`
+
+PAIR: SpecVariable -> HiddenTypeFunctionType
+EXAMPLE: `spec { x: |u64| -> bool; }`
+
+PAIR: SpecVariable -> HiddenTypeRefType
+EXAMPLE: `spec { x: &u64; }`
+
+PAIR: SpecVariable -> HiddenTypeTupleType
+EXAMPLE: `spec { x: (u64, bool); }`
+
+PAIR: SpecVariable -> SpecVariableInternal0Global
+EXAMPLE: `spec { global x: u64; }`
+
+PAIR: SpecVariable -> SpecVariableInternal0Local
+EXAMPLE: `spec { local x: u64; }`
+
+PAIR: SpecVariable -> TypeParameters
+EXAMPLE: `spec { x<T>: u64; }`
+
+=== BATCH 27 ===
+PAIR: SpecVariableInternal0Global -> GlobalTok
+EXAMPLE: `spec module { global x: u64; }`
+
+PAIR: SpecVariableInternal0Local -> LocalTok
+EXAMPLE: `spec module { local x: u64; }`
+
+PAIR: TupleType -> HiddenTypeTupleType
+EXAMPLE: `fun f(x: ((u8, u16), u32)) {}` -- the outer tuple type `((u8, u16), u32)` contains an inner tuple type `(u8, u16)` via the `_type` choice, producing `TupleType -> HiddenTypeTupleType`.
+
+PAIR: UnaryExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `!abort 1` -- the `!` starts a `unary_expression`, and `abort 1` is parsed as `abort_expression` via the `_expression` child. No precedence conflict since `abort` keyword unambiguously starts `abort_expression`.
+
+PAIR: UnaryExpression -> HiddenExpressionAssignExpression
+IMPOSSIBLE: The `unary_expression` takes `_expression` as its child, and `assign_expression` has prec.left(1). When parsing `!x = 5`, there is a shift-reduce conflict at `=`: the parser can either reduce `!x` as a complete `unary_expression` (prec 10 via `_unary_expression`) or shift `=` to continue building `assign_expression(x, =, 5)` inside the unary (prec 1). Since 10 > 1, the reduce wins, giving `assign_expression(unary_expression(!, x), =, 5)`. There is no way to get an `assign_expression` as the direct `_expression` child of `unary_expression` because the unary operator always binds more tightly than assignment. Parentheses would create an `expression_list` node, not an `assign_expression`.
+
+PAIR: UnaryExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `!'label: x` -- the `!` starts a `unary_expression`, and `'label: x` is parsed as `identified_expression` (block_identifier followed by `_expression`). No precedence conflict since the `'` character unambiguously starts a `block_identifier`. This is a spec-context construct.
+
+PAIR: UnaryExpression -> HiddenExpressionIfExpression
+EXAMPLE: `!if (true) x` -- the `!` starts a `unary_expression`, and `if (true) x` is parsed as `if_expression` via the `_expression` child. The `if` keyword unambiguously starts `if_expression`; no precedence conflict at the `if` token itself.
+
+PAIR: UnaryExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `!|x| x + 1` -- the `!` starts a `unary_expression`, and `|x| x + 1` is parsed as `lambda_expression` via the `_expression` child. The `|` after `!` unambiguously starts the lambda bindings.
+
+PAIR: UnaryExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `!loop { break }` -- the `!` starts a `unary_expression`, and `loop { break }` is parsed as `loop_expression` via the `_expression` child. The `loop` keyword unambiguously starts `loop_expression`.
+
+PAIR: UnaryExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `!match (x) { 1 => true, _ => false }` -- the `!` starts a `unary_expression`, and `match (x) { ... }` is parsed as `match_expression` via the `_expression` child. The `match` keyword unambiguously starts `match_expression`.
+
+PAIR: UnaryExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `!forall x: u64: x > 0` -- the `!` starts a `unary_expression`, and `forall x: u64: x > 0` is parsed as `quantifier_expression` via the `_expression` child. The `forall` keyword unambiguously starts `quantifier_expression`. This is a spec-only construct.
+
+PAIR: UnaryExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `!return 1` -- the `!` starts a `unary_expression`, and `return 1` is parsed as `return_expression` via the `_expression` child. The `return` keyword unambiguously starts `return_expression`.
+
+PAIR: UnaryExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `!vector[1, 2, 3]` -- the `!` starts a `unary_expression`, and `vector[1, 2, 3]` is parsed as `vector_expression` via the `_expression` child. The `vector[` token sequence unambiguously starts `vector_expression`.
+
+PAIR: UnaryExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `!while (true) { break }` -- the `!` starts a `unary_expression`, and `while (true) { break }` is parsed as `while_expression` via the `_expression` child. The `while` keyword unambiguously starts `while_expression`.
+
+PAIR: UninterpretedSpecFunction -> HiddenSpecFunctionSignature
+EXAMPLE: `spec module { fun foo(): u64; }` -- the `fun foo(): u64;` inside a spec block is an `uninterpreted_spec_function` (a spec function with no body, just a signature and semicolon). It always contains a `HiddenSpecFunctionSignature` child representing the function signature.
+
+PAIR: UseFun -> ModuleAccess2
+EXAMPLE: `use fun @addr as T.method;` -- the `use_fun` rule takes `module_access` for the function being aliased. `@addr` is `ModuleAccess2` (`@identifier`). Syntactically valid per the grammar, though semantically unusual.
+
+PAIR: UseFun -> ModuleAccess5
+EXAMPLE: `use fun MyModule::my_func as T.method;` -- the first `module_access` is `ModuleAccess5` (`_module_identifier :: member`), referencing a function by local module name.
+
+PAIR: UseFun -> ModuleAccess6
+EXAMPLE: `use fun 0x2::module::func<T> as U.method;` -- the first `module_access` is `ModuleAccess6` (`module_identity :: member type_arguments`), a fully qualified function reference with required type arguments on the member.
+
+PAIR: UseFun -> ModuleAccess8
+EXAMPLE: `use fun 0x2::module::func as T.method;` -- the first `module_access` is `ModuleAccess8` (`module_identity<type_args>? :: member`), a fully qualified function reference without type arguments.
+
+PAIR: UseFun -> ModuleAccess9
+EXAMPLE: `use fun 0x2::module::MyEnum::Variant as T.method;` -- the first `module_access` is `ModuleAccess9` (`module_identity :: enum_name<type_args>? :: variant`). Syntactically valid per the grammar, though semantically unusual for a function alias.
+
+PAIR: UseFun -> ModuleAccessMember
+EXAMPLE: `use fun exists as T.method;` -- the first `module_access` is `ModuleAccessMember` (a bare `_reserved_identifier` like `forall`, `exists`, or `spec`). Syntactically valid per the grammar, though semantically unusual.
+
+PAIR: UseMember1 -> UseMember1
+EXAMPLE: `use 0x2::pkg::{sub1::{sub2::{A}}};` -- the outer `use_member` `sub1::{sub2::{A}}` is `UseMember1` (`identifier :: { use_member, ... }`), and its inner `use_member` `sub2::{A}` is also `UseMember1`.
+
+PAIR: UseMember1 -> UseMember2
+EXAMPLE: `use 0x2::pkg::{mod1::{sub::Item}};` -- the outer `use_member` `mod1::{sub::Item}` is `UseMember1` (`identifier :: { use_member, ... }`), and its inner `use_member` `sub::Item` is `UseMember2` (`identifier :: identifier`).
+
+PAIR: UseModuleMember -> UseMember1
+EXAMPLE: `use 0x2::module::{sub::{A, B}};` -- `use_module_member` is `module_identity :: use_member`. The `use_member` here is `UseMember1` (`sub :: { A, B }`), containing nested members.
+
+PAIR: UseModuleMember -> UseMember2
+EXAMPLE: `use 0x2::module::sub::Item;` -- `use_module_member` is `module_identity :: use_member`. The `use_member` here is `UseMember2` (`sub :: Item`), a qualified member access.
+
+=== BATCH 28 ===
+PAIR: UseModuleMembers2 -> UseMember1
+EXAMPLE: `use 0x1::module::{nested::{Item}};`
+
+PAIR: UseModuleMembers2 -> UseMember2
+EXAMPLE: `use 0x1::module::{other::Item};`
+
+PAIR: VectorExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `vector[abort 0]`
+
+PAIR: VectorExpression -> HiddenExpressionAssignExpression
+EXAMPLE: `vector[x = 1]`
+
+PAIR: VectorExpression -> HiddenExpressionIdentifiedExpression
+EXAMPLE: `vector['a: x + 1]`
+
+PAIR: VectorExpression -> HiddenExpressionIfExpression
+EXAMPLE: `vector[if (true) 1 else 2]`
+
+PAIR: VectorExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `vector[|x| x + 1]`
+
+PAIR: VectorExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `vector[loop { break 1 }]`
+
+PAIR: VectorExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `vector[match (x) { 1 => 2, _ => 3 }]`
+
+PAIR: VectorExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `vector[forall x: u64: x > 0]`
+
+PAIR: VectorExpression -> HiddenExpressionReturnExpression
+EXAMPLE: `vector[return 1]`
+
+PAIR: VectorExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `vector[vector[1, 2]]`
+
+PAIR: VectorExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `vector[while (true) {}]`
+
+PAIR: VectorExpressionInternal02 -> HiddenTypeFunctionType
+EXAMPLE: `vector<|u64| -> bool>[]`
+
+PAIR: WhileExpression -> HiddenExpressionAbortExpression
+EXAMPLE: `while (abort 0) {}`
+
+PAIR: WhileExpression -> HiddenExpressionIfExpression
+EXAMPLE: `while (if (true) true else false) {}`
+
+PAIR: WhileExpression -> HiddenExpressionLambdaExpression
+EXAMPLE: `while (|x| x) {}`
+
+PAIR: WhileExpression -> HiddenExpressionLoopExpression
+EXAMPLE: `while (loop { break true }) {}`
+
+PAIR: WhileExpression -> HiddenExpressionMacroCallExpression
+EXAMPLE: `while (my_macro!(x)) {}`
+
+PAIR: WhileExpression -> HiddenExpressionMatchExpression
+EXAMPLE: `while (match (x) { true => true, _ => false }) {}`
+
+PAIR: WhileExpression -> HiddenExpressionQuantifierExpression
+EXAMPLE: `while (forall x: u64: x > 0) {}`
+
+PAIR: WhileExpression -> HiddenExpressionVectorExpression
+EXAMPLE: `while (vector[true]) {}`
+
+PAIR: WhileExpression -> HiddenExpressionWhileExpression
+EXAMPLE: `while (while (true) {}) {}`
+

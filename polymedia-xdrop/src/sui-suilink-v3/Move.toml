@@ -1,0 +1,17 @@
+# Warning:
+# Do not use in production. I added dev functions that allow anyone to mint arbitrary links.
+
+# About:
+# SuiLink v3 decompiled with Revela, prettified with Claude 3.5 Sonnet, and manually cleaned up.
+
+[package]
+name = "SuiLink"
+version = "3.0.0"
+edition = "legacy"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+# Sui = { local = "../../../../sui/crates/sui-framework/packages/sui-framework" }
+
+[addresses]
+suilink = "0x0"

@@ -1,0 +1,6 @@
+[package]
+name = "TestContractSecondary"
+edition = "2024"
+
+[addresses]
+test_secondary = "0x0"
