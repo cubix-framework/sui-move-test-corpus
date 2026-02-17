@@ -1,2 +1,0 @@
-module BenchmarksAccount::Empty {
-}

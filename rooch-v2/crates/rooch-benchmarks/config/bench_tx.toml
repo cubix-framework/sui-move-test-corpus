@@ -1,4 +1,0 @@
-tx_type = "empty"
-pprof_output = "flamegraph"
-# when tx_type is "btc-block", the following options are required
-btc_block_dir = "target/btc_blocks"

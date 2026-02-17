@@ -1,7 +1,0 @@
-[package]
-name = "MoveStdlib"
-version = "2.1.0"
-
-[addresses]
-vm = "0x0"
-std = "0x1"
