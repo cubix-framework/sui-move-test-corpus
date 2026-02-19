@@ -194,9 +194,9 @@ This corpus is used for:
 
 ## Coverage
 
-See `node-pairs-coverage.txt` for the full grammar coverage report.
+See `node-pairs-coverage.txt` for the full grammar coverage report, and `node-pairs-zero-analysis.txt` for explanations of why each zero-count pair is actually impossible.
 
-**Summary**: 1,018 of 1,716 node pairs covered (59.3%), with 1,105,094 total node-pair occurrences across the corpus.
+**Summary**: All 156 zero-count pairs are documented in `node-pairs-zero-analysis.txt` as structurally impossible given the Sui Move grammar and tree-sitter's conflict resolution rules; the remaining 1,560 attainable pairs are all covered, with 1,404,392 total node-pair occurrences across the corpus.
 
 ### Why Node-Pair Coverage?
 
